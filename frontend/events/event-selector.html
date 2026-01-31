@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event - SKASC Event Manager</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Create Event</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="/dashboard/dashboard.html" class="nav-link">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <h1 class="section-title">Select Event Type</h1>
+            <p class="text-center text-gray-600 mb-8">Choose the type of event you want to create</p>
+
+            <div class="event-grid">
+                <div class="event-card" onclick="selectEventType('hackathon')">
+                    <div class="event-icon">💻</div>
+                    <h3>HACKATHON</h3>
+                    <p>Code, create, and compete in a programming marathon</p>
+                    <div class="event-features">
+                        <span><i class="fas fa-users"></i> Team-based</span>
+                        <span><i class="fas fa-trophy"></i> Prizes</span>
+                    </div>
+                </div>
+
+                <div class="event-card" onclick="selectEventType('paper-presentation')">
+                    <div class="event-icon">📄</div>
+                    <h3>PAPER PRESENTATION</h3>
+                    <p>Present research papers and academic work</p>
+                    <div class="event-features">
+                        <span><i class="fas fa-user-graduate"></i> Individual/Team</span>
+                        <span><i class="fas fa-award"></i> Recognition</span>
+                    </div>
+                </div>
+
+                <div class="event-card" onclick="selectEventType('ideathon')">
+                    <div class="event-icon">💡</div>
+                    <h3>IDEATHON</h3>
+                    <p>Pitch innovative ideas and solutions</p>
+                    <div class="event-features">
+                        <span><i class="fas fa-lightbulb"></i> Idea-based</span>
+                        <span><i class="fas fa-chart-line"></i> Innovation</span>
+                    </div>
+                </div>
+
+                <div class="event-card" onclick="selectEventType('custom')">
+                    <div class="event-icon">✨</div>
+                    <h3>CREATE YOUR OWN</h3>
+                    <p>Design a custom event with your requirements</p>
+                    <div class="event-features">
+                        <span><i class="fas fa-sliders-h"></i> Customizable</span>
+                        <span><i class="fas fa-cogs"></i> Flexible</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <button onclick="goToEventForm()" class="btn btn-primary btn-large" id="continueBtn" style="display: none;">
+                    <i class="fas fa-arrow-right"></i> Continue to Event Details
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!Utils.isAuthenticated()) {
+                window.location.href = '/auth/login.html';
+            }
+        });
+
+        let selectedEventType = null;
+
+        function selectEventType(type) {
+            selectedEventType = type;
+            document.getElementById('continueBtn').style.display = 'inline-block';
+            
+            // Highlight selected card
+            document.querySelectorAll('.event-card').forEach(card => {
+                card.style.border = '2px solid transparent';
+            });
+            
+            // Add visual feedback
+            event.currentTarget.style.border = '2px solid #2563eb';
+            event.currentTarget.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.1)';
+        }
+
+        function goToEventForm() {
+            if (!selectedEventType) {
+                alert('Please select an event type first');
+                return;
+            }
+            
+            // Store event type in session
+            sessionStorage.setItem('eventType', selectedEventType);
+            
+            // Redirect to appropriate form
+            const formPages = {
+                'hackathon': '/events/hackathon-form.html',
+                'paper-presentation': '/events/paper-presentation-form.html',
+                'ideathon': '/events/ideathon-form.html',
+                'custom': '/events/custom-form.html'
+            };
+            
+            window.location.href = formPages[selectedEventType] || '/events/hackathon-form.html';
+        }
+    </script>
+
+    <style>
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .event-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .event-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .event-card h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.5rem;
+        }
+
+        .event-card p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .event-features {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .event-features span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-large {
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+        }
+    </style>
+</body>
+</html>

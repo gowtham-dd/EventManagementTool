@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - SKASC Event Manager</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .app-container {
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .nav-brand i {
+            color: #2563eb;
+            font-size: 1.5rem;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4b5563;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: #f3f4f6;
+            color: #2563eb;
+        }
+        
+        .event-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .event-header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .event-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .event-basic-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .event-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .event-icon-large {
+            font-size: 3rem;
+        }
+        
+        .event-title h1 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 2.2rem;
+            line-height: 1.2;
+        }
+        
+        .event-type-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: #2563eb;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+        
+        .event-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .event-detail-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .event-detail-card h3 {
+            margin: 0 0 0.8rem 0;
+            color: #4b5563;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .event-detail-card p {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .event-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #8b5cf6);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: none;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            transform: translateY(-2px);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            border: none;
+        }
+        
+        .btn-info:hover {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            transform: translateY(-2px);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: #1f2937;
+            margin: 2rem 0 1.5rem 0;
+            font-weight: 600;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border-color: #2563eb;
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #2563eb, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .feature-card h3 {
+            margin: 0 0 1rem 0;
+            color: #1f2937;
+            font-size: 1.4rem;
+        }
+        
+        .feature-card p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .feature-card .btn {
+            margin-top: auto;
+        }
+        
+        /* Stats section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5rem;
+            color: #2563eb;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .stat-card p {
+            color: #6b7280;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        /* Participants section */
+        .participants-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .participants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .participant-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .participant-avatar {
+            width: 40px;
+            height: 40px;
+            background: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .participant-info h4 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 0.95rem;
+        }
+        
+        .participant-info p {
+            margin: 0.2rem 0 0 0;
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .event-header-content {
+                flex-direction: column;
+            }
+            
+            .event-title {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            
+            .event-type-badge {
+                margin: 0;
+            }
+            
+            .event-details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .event-actions {
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Event type specific colors */
+        .hackathon-feature .feature-icon {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+        
+        .paper-feature .feature-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .ideathon-feature .feature-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: #2563eb;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Copy link button */
+        .copy-link {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            background: #f0f9ff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .copy-link input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background: white;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .copy-link button {
+            padding: 0.5rem 1rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .copy-link button:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>SKASC Event Manager</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="/dashboard/dashboard.html" class="nav-link">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                    <a href="/events/event-selector.html" class="nav-link">
+                        <i class="fas fa-plus-circle"></i> Create Event
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="event-container">
+            <div class="event-header">
+                <div id="eventLoading" style="text-align: center; padding: 3rem;">
+                    <div class="loading"></div>
+                    <p style="color: #6b7280; margin-top: 1rem;">Loading event details...</p>
+                </div>
+                
+                <div id="eventContent" style="display: none;">
+                    <div class="event-header-content">
+                        <div class="event-basic-info">
+                            <div class="event-title">
+                                <span class="event-icon-large" id="eventIcon">📅</span>
+                                <h1 id="eventName">Event Name</h1>
+                                <span class="event-type-badge" id="eventType">Event Type</span>
+                            </div>
+                            
+                            <div class="event-details-grid">
+                                <div class="event-detail-card">
+                                    <h3>Theme</h3>
+                                    <p id="eventTheme">Event Theme</p>
+                                </div>
+                                <div class="event-detail-card">
+                                    <h3>Created</h3>
+                                    <p id="eventDate">Date</p>
+                                </div>
+                                <div class="event-detail-card">
+                                    <h3>Status</h3>
+                                    <p id="eventStatus">Active</p>
+                                </div>
+                                <div class="event-detail-card">
+                                    <h3>Registration Form</h3>
+                                    <div class="copy-link">
+                                        <input type="text" id="formLink" readonly>
+                                        <button onclick="copyFormLink()">
+                                            <i class="fas fa-copy"></i> Copy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="event-actions">
+                            <button onclick="openCertificateGenerator()" class="btn btn-success">
+                                <i class="fas fa-certificate"></i> Certificates
+                            </button>
+                            <button onclick="openCollegeOutreach()" class="btn btn-info">
+                                <i class="fas fa-university"></i> College Outreach
+                            </button>
+                            <button onclick="openPosterGenerator()" class="btn btn-warning">
+                                <i class="fas fa-palette"></i> Design Posters
+                            </button>
+                            <button onclick="openVoiceAgent()" class="btn btn-secondary">
+                                <i class="fas fa-phone-alt"></i> Voice Agent
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Event Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="participantsCount">0</h3>
+                    <p>Participants</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="certificatesGenerated">0</h3>
+                    <p>Certificates Generated</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="collegesInvited">0</h3>
+                    <p>Colleges Invited</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="formResponses">0</h3>
+                    <p>Form Responses</p>
+                </div>
+            </div>
+
+            <h2 class="section-title">Event Features</h2>
+            <div class="features-grid">
+                <div class="feature-card hackathon-feature" onclick="openCertificateGenerator()">
+                    <div class="feature-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3>Certificate Generator</h3>
+                    <p>Create and download professional certificates for participants. Customize design, add signatures, and bulk generate certificates.</p>
+                    <button class="btn btn-primary">Open Tool</button>
+                </div>
+                
+                <div class="feature-card paper-feature" onclick="openCollegeOutreach()">
+                    <div class="feature-icon">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h3>College Outreach</h3>
+                    <p>Send invitations to other colleges for participants. Manage college database, track responses, and analyze outreach performance.</p>
+                    <button class="btn btn-primary">Manage Outreach</button>
+                </div>
+                
+                <div class="feature-card ideathon-feature" onclick="openPosterGenerator()">
+                    <div class="feature-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3>Poster Generator</h3>
+                    <p>Design eye-catching event posters. Choose templates, customize colors, add event details, and download high-quality images.</p>
+                    <button class="btn btn-primary">Design Posters</button>
+                </div>
+                
+                <div class="feature-card" onclick="openVoiceAgent()">
+                    <div class="feature-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h3>Voice Agent</h3>
+                    <p>Setup automated calling for event reminders, confirmations, and announcements. Record custom messages and manage call lists.</p>
+                    <button class="btn btn-primary">Setup Calls</button>
+                </div>
+                
+                <div class="feature-card" onclick="openParticipantManager()">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Participant Manager</h3>
+                    <p>Manage all participants in one place. View registrations, track attendance, send notifications, and export participant data.</p>
+                    <button class="btn btn-primary">Manage Participants</button>
+                </div>
+                
+                <div class="feature-card" onclick="openAnalytics()">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Event Analytics</h3>
+                    <p>View detailed analytics and insights about your event. Track participation trends, engagement metrics, and performance reports.</p>
+                    <button class="btn btn-primary">View Analytics</button>
+                </div>
+            </div>
+
+            <h2 class="section-title">Recent Participants</h2>
+            <div class="participants-section">
+                <div class="participants-grid" id="participantsList">
+                    <!-- Participants will be loaded here -->
+                    <div style="text-align: center; padding: 2rem; color: #9ca3af; grid-column: 1 / -1;">
+                        <i class="fas fa-users fa-2x"></i>
+                        <p style="margin-top: 1rem;">No participants yet. Share your registration form!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            if (!Utils.isAuthenticated()) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            // Load event details
+            loadEventDetails();
+            loadEventStats();
+            loadParticipants();
+        });
+
+        function loadEventDetails() {
+            const eventLoading = document.getElementById('eventLoading');
+            const eventContent = document.getElementById('eventContent');
+            
+            try {
+                // Get event from session storage
+                const eventData = JSON.parse(sessionStorage.getItem('selectedEvent'));
+                const eventId = sessionStorage.getItem('selectedEventId');
+                
+                if (!eventData || !eventId) {
+                    throw new Error('No event selected');
+                }
+                
+                // Update UI with event data
+                document.getElementById('eventName').textContent = eventData.event_name || 'Unnamed Event';
+                document.getElementById('eventTheme').textContent = eventData.theme || 'Not specified';
+                
+                const eventType = eventData.event_type || 'custom';
+                document.getElementById('eventType').textContent = formatEventType(eventType);
+                document.getElementById('eventIcon').textContent = getEventIcon(eventType);
+                
+                // Format date
+                const eventDate = eventData.created_at || eventData.id || new Date().toISOString();
+                document.getElementById('eventDate').textContent = formatDate(eventDate);
+                
+                // Set form link
+                const formLink = eventData.google_form_link || '#';
+                document.getElementById('formLink').value = formLink;
+                
+                // Hide loading, show content
+                eventLoading.style.display = 'none';
+                eventContent.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading event:', error);
+                eventLoading.innerHTML = `
+                    <div style="text-align: center; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle fa-3x"></i>
+                        <h3 style="margin-top: 1rem;">Event Not Found</h3>
+                        <p>${error.message}</p>
+                        <button onclick="window.location.href='/dashboard/dashboard.html'" class="btn btn-primary" style="margin-top: 1.5rem;">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function loadEventStats() {
+            // Load statistics for the event
+            // This would typically come from an API
+            setTimeout(() => {
+                // Mock data for demonstration
+                document.getElementById('participantsCount').textContent = '42';
+                document.getElementById('certificatesGenerated').textContent = '35';
+                document.getElementById('collegesInvited').textContent = '8';
+                document.getElementById('formResponses').textContent = '58';
+            }, 1000);
+        }
+
+        function loadParticipants() {
+            // Load participants data
+            // This would typically come from an API
+            setTimeout(() => {
+                const participants = [
+                    { name: 'John Doe', email: 'john@example.com', college: 'SKASC', registered: '2 days ago' },
+                    { name: 'Jane Smith', email: 'jane@example.com', college: 'PSG Tech', registered: '1 day ago' },
+                    { name: 'Bob Johnson', email: 'bob@example.com', college: 'CIT', registered: 'Today' },
+                    { name: 'Alice Brown', email: 'alice@example.com', college: 'Kumaraguru', registered: '3 days ago' },
+                    { name: 'Charlie Wilson', email: 'charlie@example.com', college: 'Amrita', registered: 'Yesterday' }
+                ];
+                
+                const participantsList = document.getElementById('participantsList');
+                if (participants.length === 0) return;
+                
+                let participantsHTML = '';
+                participants.forEach(participant => {
+                    const initial = participant.name.charAt(0).toUpperCase();
+                    participantsHTML += `
+                        <div class="participant-card">
+                            <div class="participant-avatar">${initial}</div>
+                            <div class="participant-info">
+                                <h4>${participant.name}</h4>
+                                <p>${participant.college} • ${participant.registered}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                participantsList.innerHTML = participantsHTML;
+            }, 1500);
+        }
+
+        function getEventIcon(eventType) {
+            const icons = {
+                'hackathon': '💻',
+                'paper-presentation': '📄',
+                'ideathon': '💡',
+                'custom': '✨',
+                'workshop': '🔧',
+                'seminar': '🎤',
+                'conference': '🏛️',
+                'competition': '🏆'
+            };
+            return icons[eventType.toLowerCase()] || '📅';
+        }
+
+        function formatEventType(eventType) {
+            const formatted = {
+                'hackathon': 'Hackathon',
+                'paper-presentation': 'Paper Presentation',
+                'ideathon': 'Ideathon',
+                'custom': 'Custom Event',
+                'workshop': 'Workshop',
+                'seminar': 'Seminar',
+                'conference': 'Conference',
+                'competition': 'Competition'
+            };
+            return formatted[eventType.toLowerCase()] || eventType;
+        }
+
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return 'Recently';
+                
+                return date.toLocaleDateString('en-US', { 
+                    weekday: 'long',
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            } catch (e) {
+                return 'Recently';
+            }
+        }
+
+        function copyFormLink() {
+            const formLink = document.getElementById('formLink');
+            formLink.select();
+            formLink.setSelectionRange(0, 99999);
+            
+            navigator.clipboard.writeText(formLink.value)
+                .then(() => {
+                    const button = event.target.tagName === 'BUTTON' ? event.target : event.target.parentElement;
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    button.style.background = '#10b981';
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.style.background = '';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy link. Please copy it manually.');
+                });
+        }
+
+        function openCertificateGenerator() {
+            // Save event to session storage for certificate generator
+            const eventData = JSON.parse(sessionStorage.getItem('selectedEvent'));
+            sessionStorage.setItem('createdEvent', JSON.stringify(eventData));
+            
+            // Navigate to certificate generator
+            window.location.href = '/features/certificate-generator.html';
+        }
+
+        function openCollegeOutreach() {
+            // Save event to session storage for college outreach
+            const eventData = JSON.parse(sessionStorage.getItem('selectedEvent'));
+            sessionStorage.setItem('createdEvent', JSON.stringify(eventData));
+            
+            // Navigate to college outreach
+            window.location.href = '/features/college-outreach.html';
+        }
+
+        function openPosterGenerator() {
+            // Save event to session storage for poster generator
+            const eventData = JSON.parse(sessionStorage.getItem('selectedEvent'));
+            sessionStorage.setItem('createdEvent', JSON.stringify(eventData));
+            
+            // Navigate to poster generator
+            window.location.href = '/features/poster-generator.html';
+        }
+
+        function openVoiceAgent() {
+            // Save event to session storage for voice agent
+            const eventData = JSON.parse(sessionStorage.getItem('selectedEvent'));
+            sessionStorage.setItem('createdEvent', JSON.stringify(eventData));
+            
+            // Navigate to voice agent
+            window.location.href = '/features/voice-agent.html';
+        }
+
+        function openParticipantManager() {
+            Utils.showSuccessModal('Participant Manager feature coming soon!');
+        }
+
+        function openAnalytics() {
+            Utils.showSuccessModal('Event Analytics feature coming soon!');
+        }
+    </script>
+</body>
+</html>

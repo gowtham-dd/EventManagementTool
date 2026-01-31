@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Agent - SKASC Event Manager</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .app-container {
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .nav-brand i {
+            color: #ef4444;
+            font-size: 1.5rem;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4b5563;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: #f3f4f6;
+            color: #2563eb;
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        /* Event Info Card */
+        .event-info-card {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            padding: 2rem;
+            border-radius: 16px;
+            border-left: 5px solid #ef4444;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.1);
+        }
+        
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .event-header h3 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.5rem;
+        }
+        
+        .event-badge {
+            background: #ef4444;
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .event-info-card p {
+            margin: 0.5rem 0;
+            color: #4b5563;
+        }
+        
+        .event-info-card a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+            word-break: break-all;
+        }
+        
+        .event-info-card a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: #ef4444;
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .feature-card h3 {
+            margin: 0 0 1rem 0;
+            color: #1f2937;
+            font-size: 1.4rem;
+        }
+        
+        .feature-card p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #ef4444;
+            border: 2px solid #ef4444;
+        }
+        
+        .btn-outline:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-primary {
+            background: #ef4444;
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+        
+        .btn-lg {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            border: none;
+        }
+        
+        .btn-danger:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+        
+        .mt-4 {
+            margin-top: 1rem;
+        }
+        
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+        
+        .mt-8 {
+            margin-top: 2rem;
+        }
+        
+        /* Modal Styles - UPDATED FOR SCROLLABILITY */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: flex-start; /* Changed from center to flex-start */
+            z-index: 1000;
+            padding: 2rem 1rem; /* Added padding */
+            overflow-y: auto; /* Enable scrolling */
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            animation: modalSlideIn 0.3s ease-out;
+            margin: auto; /* Center vertically when possible */
+            max-height: 90vh; /* Limit height */
+            overflow-y: auto; /* Enable scrolling inside modal */
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2.5rem;
+        }
+        
+        .modal-content h3 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .modal-content > p {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 0.95rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+        
+        .call-preview {
+            background: #f8fafc;
+            padding: 1.2rem;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            font-style: italic;
+            color: #4b5563;
+            line-height: 1.6;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        /* Voice Control Modal - UPDATED FOR SCROLLABILITY */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .modal-header p {
+            margin: 0.3rem 0 0 0;
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+        
+        .voice-controls {
+            margin-top: 1.5rem;
+        }
+        
+        .message-display {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+        
+        .message-display h4 {
+            margin: 0 0 1rem 0;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+        
+        .message-text {
+            color: #4b5563;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .voice-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .voice-settings {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        
+        .setting-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .setting-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .setting-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+            font-weight: 500;
+        }
+        
+        .setting-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e7eb;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        .setting-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ef4444;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .setting-group span {
+            display: inline-block;
+            margin-left: 1rem;
+            color: #ef4444;
+            font-weight: 600;
+            min-width: 40px;
+        }
+        
+        .call-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f0f9ff;
+            padding: 1.2rem;
+            border-radius: 12px;
+            border: 1px solid #e0f2fe;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        
+        .status-indicator i {
+            font-size: 0.8rem;
+        }
+        
+        .status-indicator span {
+            color: #1f2937;
+            font-weight: 500;
+        }
+        
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #ef4444;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .timer i {
+            font-size: 1rem;
+        }
+        
+        /* Recent Calls Section */
+        .recent-calls-section {
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .recent-calls-section h3 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+        
+        .calls-list {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .call-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.3s;
+        }
+        
+        .call-item:hover {
+            background: #f8fafc;
+        }
+        
+        .call-item:last-child {
+            border-bottom: none;
+        }
+        
+        .call-info {
+            flex: 1;
+        }
+        
+        .call-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+        
+        .call-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .call-status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #9ca3af;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state p {
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .modal-actions,
+            .voice-actions {
+                flex-direction: column;
+            }
+            
+            .voice-actions button {
+                width: 100%;
+            }
+            
+            .call-status {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .modal-content {
+                padding: 1.5rem;
+            }
+            
+            /* Better mobile modal */
+            .modal-overlay {
+                padding: 1rem;
+                align-items: flex-start;
+            }
+            
+            .modal-content {
+                margin: 1rem auto;
+                max-height: 85vh;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .event-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            /* Even better mobile modal */
+            .modal-overlay {
+                padding: 0.5rem;
+            }
+            
+            .modal-content {
+                padding: 1.2rem;
+                border-radius: 12px;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: #ef4444;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Scrollbar styling for better UX */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .modal-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Voice Control Modal specific scroll */
+        #voiceControlModal .modal-content {
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>Voice Agent</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="/features/features.html" class="nav-link">
+                        <i class="fas fa-arrow-left"></i> Back to Features
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <h1 class="section-title">Voice Agent</h1>
+            <p class="subtitle">Automated calling system for event participant outreach. Call colleges, send reminders, and manage communications efficiently.</p>
+
+            <!-- Event Info Card -->
+            <div id="eventInfo" class="event-info-card">
+                <!-- Event info will be loaded here -->
+            </div>
+
+            <!-- Features Grid -->
+            <div class="features-grid">
+                <div class="feature-card" onclick="initiateVoiceCall()">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                        <i class="fas fa-phone-volume"></i>
+                    </div>
+                    <h3>Start Voice Call</h3>
+                    <p>Initiate automated calling to colleges for participant invitations and event announcements.</p>
+                    <button class="btn btn-outline mt-4">
+                        <i class="fas fa-play-circle"></i> Start Calling
+                    </button>
+                </div>
+
+                <div class="feature-card" onclick="openCallScheduler()">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Schedule Calls</h3>
+                    <p>Schedule automated calls for specific times and dates. Perfect for reminders and follow-ups.</p>
+                    <button class="btn btn-outline mt-4">
+                        <i class="fas fa-calendar-plus"></i> Schedule
+                    </button>
+                </div>
+
+                <div class="feature-card" onclick="openCallHistory()">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3>Call History</h3>
+                    <p>View history of all calls made, track responses, and analyze outreach performance.</p>
+                    <button class="btn btn-outline mt-4">
+                        <i class="fas fa-chart-bar"></i> View History
+                    </button>
+                </div>
+
+                <div class="feature-card" onclick="openCallTemplates()">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                        <i class="fas fa-file-audio"></i>
+                    </div>
+                    <h3>Call Templates</h3>
+                    <p>Create and manage different call message templates for various event types and purposes.</p>
+                    <button class="btn btn-outline mt-4">
+                        <i class="fas fa-sliders-h"></i> Manage Templates
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Calls Section -->
+            <div class="recent-calls-section">
+                <h3>Recent Calls</h3>
+                <div class="calls-list" id="callsList">
+                    <div class="empty-state">
+                        <i class="fas fa-phone-slash"></i>
+                        <p>No calls made yet</p>
+                        <p>Start your first voice call to see history here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Call Setup Modal -->
+    <div id="voiceCallModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <i class="fas fa-phone-alt"></i>
+            </div>
+            <h3>Voice Agent Setup</h3>
+            <p>Configure automated calling for your event</p>
+            
+            <div class="form-group mt-4">
+                <label class="form-label">College Name</label>
+                <input type="text" id="collegeName" class="form-input" 
+                       placeholder="e.g., PSG College of Technology">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Contact Person</label>
+                <input type="text" id="contactPerson" class="form-input" 
+                       placeholder="e.g., Head of Department, Event Coordinator">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Contact Number</label>
+                <input type="tel" id="phoneNumber" class="form-input" 
+                       placeholder="e.g., +91 9876543210">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Call Type</label>
+                <select id="callType" class="form-input" onchange="updateCallMessage()">
+                    <option value="invitation">Event Invitation</option>
+                    <option value="reminder">Reminder Call</option>
+                    <option value="followup">Follow-up Call</option>
+                    <option value="information">Information Call</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Call Message Preview</label>
+                <div class="call-preview" id="callMessagePreview">
+                    <!-- Message will be generated here -->
+                </div>
+            </div>
+            
+            <div class="modal-actions mt-6">
+                <button onclick="startVoiceCall()" class="btn btn-primary btn-lg">
+                    <i class="fas fa-play"></i> Start Calling
+                </button>
+                <button onclick="closeVoiceModal()" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!Utils.isAuthenticated()) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            // Load event info
+            loadEventInfo();
+            
+            // Load recent calls
+            loadRecentCalls();
+            
+            // Initialize call message
+            updateCallMessage();
+            
+            // Close modal when clicking outside
+            document.addEventListener('click', function(event) {
+                const modal = document.getElementById('voiceCallModal');
+                if (modal && modal.style.display === 'flex' && event.target === modal) {
+                    closeVoiceModal();
+                }
+            });
+        });
+
+        let eventData = {};
+        let recentCalls = [];
+
+        function loadEventInfo() {
+            const data = JSON.parse(sessionStorage.getItem('createdEvent'));
+            if (!data) {
+                // Try to get from selectedEvent
+                const selectedData = JSON.parse(sessionStorage.getItem('selectedEvent'));
+                if (!selectedData) {
+                    // Redirect if no event data
+                    window.location.href = '/dashboard/dashboard.html';
+                    return;
+                }
+                eventData = selectedData;
+            } else {
+                eventData = data;
+            }
+
+            const eventInfo = document.getElementById('eventInfo');
+            eventInfo.innerHTML = `
+                <div class="event-header">
+                    <h3>${eventData.event_name || 'Current Event'}</h3>
+                    <span class="event-badge">${eventData.event_type || 'Event'}</span>
+                </div>
+                <p><strong>Event:</strong> ${eventData.event_name || 'Not specified'}</p>
+                <p><strong>Theme:</strong> ${eventData.theme || 'Not specified'}</p>
+                ${eventData.google_form_link ? `<p><strong>Registration Link:</strong> 
+                <a href="${eventData.google_form_link}" target="_blank">${eventData.google_form_link}</a></p>` : ''}
+            `;
+        }
+
+        function loadRecentCalls() {
+            // Load from localStorage
+            const savedCalls = localStorage.getItem('voiceAgentCalls');
+            if (savedCalls) {
+                recentCalls = JSON.parse(savedCalls);
+                updateCallsList();
+            }
+        }
+
+        function saveCall(callData) {
+            recentCalls.unshift(callData);
+            
+            // Keep only last 10 calls
+            if (recentCalls.length > 10) {
+                recentCalls = recentCalls.slice(0, 10);
+            }
+            
+            localStorage.setItem('voiceAgentCalls', JSON.stringify(recentCalls));
+            updateCallsList();
+        }
+
+        function updateCallsList() {
+            const callsList = document.getElementById('callsList');
+            
+            if (recentCalls.length === 0) {
+                callsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-phone-slash"></i>
+                        <p>No calls made yet</p>
+                        <p>Start your first voice call to see history here</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let callsHTML = '';
+            recentCalls.forEach(call => {
+                const statusClass = call.status === 'completed' ? 'status-success' : 
+                                   call.status === 'failed' ? 'status-failed' : 'status-pending';
+                const statusText = call.status === 'completed' ? 'Completed' : 
+                                  call.status === 'failed' ? 'Failed' : 'Pending';
+                
+                callsHTML += `
+                    <div class="call-item">
+                        <div class="call-info">
+                            <h4>${call.collegeName}</h4>
+                            <p>${call.contactPerson} • ${call.phoneNumber}</p>
+                            <p><small>${new Date(call.timestamp).toLocaleString()}</small></p>
+                        </div>
+                        <div class="call-status-badge ${statusClass}">
+                            ${statusText}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            callsList.innerHTML = callsHTML;
+        }
+
+        function initiateVoiceCall() {
+            document.getElementById('voiceCallModal').style.display = 'flex';
+            document.getElementById('collegeName').focus();
+            
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVoiceModal() {
+            document.getElementById('voiceCallModal').style.display = 'none';
+            // Restore body scroll
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateCallMessage() {
+            const callType = document.getElementById('callType').value;
+            const collegeName = document.getElementById('collegeName').value || '[College Name]';
+            const contactPerson = document.getElementById('contactPerson').value || '[Contact Person]';
+            
+            let message = '';
+            
+            switch(callType) {
+                case 'invitation':
+                    message = `Hello ${contactPerson}, this is an automated call from SKASC Event Manager regarding our event "${eventData.event_name || 'Upcoming Event'}". We're organizing a ${eventData.event_type || 'special event'} on the theme "${eventData.theme || 'innovation'}" and would like to invite students from ${collegeName} to participate. Registration details are available online. Could you please share this opportunity with interested students? Thank you!`;
+                    break;
+                    
+                case 'reminder':
+                    message = `Hello ${contactPerson}, this is a reminder call from SKASC Event Manager. We wanted to remind you about our event "${eventData.event_name || 'Upcoming Event'}". The registration deadline is approaching soon. Please encourage your students to register at their earliest convenience. Thank you!`;
+                    break;
+                    
+                case 'followup':
+                    message = `Hello ${contactPerson}, this is a follow-up call from SKASC Event Manager. We're following up on our previous invitation for "${eventData.event_name || 'the event'}". Have you been able to share this opportunity with your students? If you have any questions or need assistance with registrations, please let us know. Thank you!`;
+                    break;
+                    
+                case 'information':
+                    message = `Hello ${contactPerson}, this is an informational call from SKASC Event Manager. We're calling to provide more information about "${eventData.event_name || 'our event'}". The event focuses on ${eventData.theme || 'innovation and technology'}. We have exciting prizes and opportunities for participants. For detailed information and registration, please visit our official registration portal. Thank you!`;
+                    break;
+                    
+                default:
+                    message = `Hello ${contactPerson}, this is an automated call from SKASC Event Manager regarding "${eventData.event_name || 'our event'}". We appreciate your interest and look forward to your participation.`;
+            }
+            
+            document.getElementById('callMessagePreview').textContent = message;
+        }
+
+        // Auto-update message when inputs change
+        document.getElementById('collegeName').addEventListener('input', updateCallMessage);
+        document.getElementById('contactPerson').addEventListener('input', updateCallMessage);
+        document.getElementById('callType').addEventListener('change', updateCallMessage);
+
+        async function startVoiceCall() {
+            const collegeName = document.getElementById('collegeName').value;
+            const contactPerson = document.getElementById('contactPerson').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const callType = document.getElementById('callType').value;
+            
+            if (!collegeName || !contactPerson || !phoneNumber) {
+                Utils.showError('Please fill all required fields');
+                return;
+            }
+
+            // Get the message
+            const message = document.getElementById('callMessagePreview').textContent;
+            
+            // Close setup modal
+            closeVoiceModal();
+            
+            // Show voice control interface
+            showVoiceControlInterface(message, collegeName, contactPerson, phoneNumber, callType);
+        }
+
+        // Voice control functions
+        let currentSpeech = null;
+        let callStartTime = null;
+        let timerInterval = null;
+
+        function showVoiceControlInterface(message, collegeName, contactPerson, phoneNumber, callType) {
+            // Create voice control modal
+            const voiceControlHTML = `
+                <div id="voiceControlModal" class="modal-overlay" style="display: flex; align-items: flex-start;">
+                    <div class="modal-content" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
+                        <div class="modal-header">
+                            <div>
+                                <h3><i class="fas fa-phone-volume"></i> Voice Agent Active</h3>
+                                <p>Calling: ${collegeName} (${contactPerson})</p>
+                                <p>Number: ${phoneNumber}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="voice-controls">
+                            <div class="message-display">
+                                <h4>Message to Speak:</h4>
+                                <div class="message-text">${message}</div>
+                            </div>
+                            
+                            <div class="voice-actions">
+                                <button onclick="playVoiceMessage('${message.replace(/'/g, "\\'")}')" 
+                                        class="btn btn-primary btn-lg">
+                                    <i class="fas fa-play-circle"></i> Play Message
+                                </button>
+                                <button onclick="pauseVoiceMessage()" class="btn btn-secondary">
+                                    <i class="fas fa-pause"></i> Pause
+                                </button>
+                                <button onclick="stopVoiceMessage()" class="btn btn-danger">
+                                    <i class="fas fa-stop"></i> Stop
+                                </button>
+                                <button onclick="completeCall()" class="btn btn-outline">
+                                    <i class="fas fa-check-circle"></i> Mark Complete
+                                </button>
+                            </div>
+                            
+                            <div class="voice-settings mt-4">
+                                <div class="setting-group">
+                                    <label>Speech Rate:</label>
+                                    <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1" oninput="document.getElementById('rateValue').textContent = this.value">
+                                    <span id="rateValue">1.0</span>
+                                </div>
+                                <div class="setting-group">
+                                    <label>Pitch:</label>
+                                    <input type="range" id="speechPitch" min="0.5" max="2" step="0.1" value="1" oninput="document.getElementById('pitchValue').textContent = this.value">
+                                    <span id="pitchValue">1.0</span>
+                                </div>
+                            </div>
+                            
+                            <div class="call-status">
+                                <div class="status-indicator">
+                                    <i class="fas fa-circle" style="color: #f59e0b;"></i>
+                                    <span>Ready to start call...</span>
+                                </div>
+                                <div class="timer">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="callTimer">00:00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to page
+            const modalContainer = document.createElement('div');
+            modalContainer.innerHTML = voiceControlHTML;
+            document.body.appendChild(modalContainer);
+            
+            // Add close functionality when clicking outside
+            const modal = modalContainer.querySelector('.modal-overlay');
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeVoiceControl();
+                }
+            });
+            
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        function playVoiceMessage(message) {
+            if ('speechSynthesis' in window) {
+                // Stop any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                // Create new speech
+                currentSpeech = new SpeechSynthesisUtterance();
+                currentSpeech.text = message;
+                currentSpeech.rate = parseFloat(document.getElementById('speechRate').value);
+                currentSpeech.pitch = parseFloat(document.getElementById('speechPitch').value);
+                currentSpeech.volume = 1;
+                
+                // Set voice if available
+                const voices = window.speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    // Prefer female voice for professional calls
+                    const preferredVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Google UK English Female'));
+                    if (preferredVoice) {
+                        currentSpeech.voice = preferredVoice;
+                    }
+                }
+                
+                // Add event listeners
+                currentSpeech.onstart = () => {
+                    const indicator = document.querySelector('.status-indicator i');
+                    const statusText = document.querySelector('.status-indicator span');
+                    if (indicator && statusText) {
+                        indicator.style.color = '#10b981';
+                        statusText.textContent = 'Speaking...';
+                    }
+                    startCallTimer();
+                };
+                
+                currentSpeech.onend = () => {
+                    const indicator = document.querySelector('.status-indicator i');
+                    const statusText = document.querySelector('.status-indicator span');
+                    if (indicator && statusText) {
+                        indicator.style.color = '#6b7280';
+                        statusText.textContent = 'Call ended';
+                    }
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                    }
+                };
+                
+                // Speak the message
+                window.speechSynthesis.speak(currentSpeech);
+            } else {
+                Utils.showError('Text-to-speech is not supported in your browser.');
+            }
+        }
+
+        function pauseVoiceMessage() {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.pause();
+                const indicator = document.querySelector('.status-indicator i');
+                const statusText = document.querySelector('.status-indicator span');
+                if (indicator && statusText) {
+                    indicator.style.color = '#f59e0b';
+                    statusText.textContent = 'Paused';
+                }
+            }
+        }
+
+        function stopVoiceMessage() {
+            window.speechSynthesis.cancel();
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            const indicator = document.querySelector('.status-indicator i');
+            const statusText = document.querySelector('.status-indicator span');
+            if (indicator && statusText) {
+                indicator.style.color = '#ef4444';
+                statusText.textContent = 'Call stopped';
+            }
+        }
+
+        function startCallTimer() {
+            callStartTime = new Date();
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = Math.floor((now - callStartTime) / 1000);
+                const minutes = Math.floor(diff / 60).toString().padStart(2, '0');
+                const seconds = (diff % 60).toString().padStart(2, '0');
+                const timerElement = document.getElementById('callTimer');
+                if (timerElement) {
+                    timerElement.textContent = `${minutes}:${seconds}`;
+                }
+            }, 1000);
+        }
+
+        function completeCall() {
+            // Save the call to history
+            const collegeName = document.getElementById('collegeName').value;
+            const contactPerson = document.getElementById('contactPerson').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const callType = document.getElementById('callType').value;
+            
+            const callData = {
+                collegeName: collegeName,
+                contactPerson: contactPerson,
+                phoneNumber: phoneNumber,
+                callType: callType,
+                timestamp: new Date().toISOString(),
+                status: 'completed',
+                duration: document.getElementById('callTimer').textContent
+            };
+            
+            saveCall(callData);
+            
+            // Close the voice control modal
+            closeVoiceControl();
+            
+            // Show success message
+            Utils.showSuccessModal(`Call to ${collegeName} completed successfully!<br>The call has been saved to your history.`);
+        }
+
+        function closeVoiceControl() {
+            stopVoiceMessage();
+            const modal = document.getElementById('voiceControlModal');
+            if (modal) {
+                modal.remove();
+            }
+            // Restore body scroll
+            document.body.style.overflow = 'auto';
+        }
+
+        // Additional feature functions
+        function openCallScheduler() {
+            Utils.showSuccessModal('Call scheduling feature coming soon!<br>You will be able to schedule automated calls for specific dates and times.');
+        }
+
+        function openCallHistory() {
+            // Already showing in recent calls section
+            document.querySelector('.recent-calls-section').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        function openCallTemplates() {
+            Utils.showSuccessModal('Call templates feature coming soon!<br>You will be able to create and manage different message templates for various scenarios.');
+        }
+    </script>
+</body>
+</html>

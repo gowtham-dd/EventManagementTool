@@ -1,0 +1,12 @@
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-CORS==4.0.0
+Flask-JWT-Extended==4.5.3
+python-dotenv==1.0.0
+sqlalchemy==2.0.19
+twilio==8.9.0
+google-api-python-client==2.99.0
+google-auth-httplib2==0.1.1
+google-auth-oauthlib==1.1.0
+pillow==10.1.0
+reportlab==4.0.7

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Portal - SKASC Event Manager</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-university"></i>
+                    <span>College Portal</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="/dashboard/dashboard.html" class="nav-link">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <h1 class="section-title">Select Your College</h1>
+            <p class="text-center text-gray-600 mb-8">Click on your college to access event creation</p>
+
+            <div class="college-grid">
+                <div class="college-card" onclick="selectCollege('SKASC')">
+                    <div class="college-logo" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);">
+                        SK
+                    </div>
+                    <h3>Sri Krishna Adithya College of Arts and Science</h3>
+                    <p>Main Campus</p>
+                </div>
+
+                <div class="college-card" onclick="selectCollege('KCT')">
+                    <div class="college-logo" style="background: linear-gradient(135deg, #dc2626, #b91c1c);">
+                        KCT
+                    </div>
+                    <h3>Kumaraguru College of Technology</h3>
+                    <p>Affiliated College</p>
+                </div>
+
+                <div class="college-card" onclick="selectCollege('PSG')">
+                    <div class="college-logo" style="background: linear-gradient(135deg, #059669, #047857);">
+                        PSG
+                    </div>
+                    <h3>PSG College of Technology</h3>
+                    <p>Affiliated College</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <button onclick="goToEventCreation()" class="btn btn-primary btn-large" id="continueBtn" style="display: none;">
+                    <i class="fas fa-arrow-right"></i> Continue to Event Creation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!Utils.isAuthenticated()) {
+                window.location.href = '/auth/login.html';
+            }
+        });
+
+        let selectedCollege = null;
+
+        function selectCollege(college) {
+            selectedCollege = college;
+            document.getElementById('continueBtn').style.display = 'inline-block';
+            
+            // Highlight selected card
+            document.querySelectorAll('.college-card').forEach(card => {
+                card.style.border = '2px solid transparent';
+            });
+            
+            // Add visual feedback
+            event.currentTarget.style.border = '2px solid #2563eb';
+            event.currentTarget.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.1)';
+        }
+
+        function goToEventCreation() {
+            if (!selectedCollege) {
+                alert('Please select a college first');
+                return;
+            }
+            
+            // Store selected college in session
+            sessionStorage.setItem('selectedCollege', selectedCollege);
+            window.location.href = '/events/event-selector.html';
+        }
+    </script>
+
+    <style>
+        .college-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .college-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+        }
+
+        .college-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .college-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .college-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .college-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .btn-large {
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-gray-600 {
+            color: var(--gray);
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mt-8 {
+            margin-top: 2rem;
+        }
+    </style>
+</body>
+</html>

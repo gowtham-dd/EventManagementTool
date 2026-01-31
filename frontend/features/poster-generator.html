@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Marketing Tools - SKASC Event Manager</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Remove QR Code library since we're using static QR -->
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-qrcode"></i>
+                    <span>Event Marketing Tools</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="/features/features.html" class="nav-link">
+                        <i class="fas fa-arrow-left"></i> Back to Features
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <h1 class="section-title">Event Promotion Tools</h1>
+            <p class="text-center text-gray-600 mb-8">Generate QR codes for registration and AI-powered posters</p>
+
+            <div class="tools-grid">
+                <!-- QR Code Generator Card -->
+                <div class="tool-card">
+                    <div class="tool-icon" style="background: linear-gradient(135deg, #2563eb, #8b5cf6);">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h3>Event QR Code</h3>
+                    <p class="tool-description">Generate QR codes that link directly to your event registration form. Perfect for posters, flyers, and digital promotion.</p>
+                    
+                    <div class="qr-generator">
+                        <div class="qr-preview-container" id="qrPreview">
+                            <!-- Static QR Code -->
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://docs.google.com/forms/d/e/1FAIpQLSeeM-BxM0i6WwCyjZx0SwZvnNTiCaOFF4HXcu0tZyy9284fPw/viewform?usp=publish-editor" 
+                                 alt="Event Registration QR Code"
+                                 style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; padding: 10px; background: white;">
+                            <div class="qr-instructions" style="margin-top: 1rem; text-align: center; color: #6b7280; font-size: 0.9rem;">
+                                <p>Scan this QR code to register for the event</p>
+                                <p style="font-size: 0.8rem; margin-top: 0.5rem;">Links to: Google Forms Registration</p>
+                            </div>
+                        </div>
+                        
+                        <div class="qr-options">
+                            <div class="form-group">
+                                <label class="form-label">QR Code Information</label>
+                                <div class="qr-info" style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                        <i class="fas fa-link" style="color: #2563eb;"></i>
+                                        <span>Links to: Event Registration Form</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="fas fa-calendar" style="color: #10b981;"></i>
+                                        <span>Always available for scanning</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Usage Tips</label>
+                                <div class="usage-tips" style="background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                        <i class="fas fa-print" style="color: #8b5cf6;"></i>
+                                        <span>Print on event posters and flyers</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                        <i class="fas fa-desktop" style="color: #f59e0b;"></i>
+                                        <span>Embed in digital invitations</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="fas fa-bullhorn" style="color: #ef4444;"></i>
+                                        <span>Share on social media</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="qr-actions" id="qrActions">
+                            <button onclick="downloadStaticQR()" class="btn btn-success">
+                                <i class="fas fa-download"></i> Download QR Code
+                            </button>
+                            <button onclick="copyStaticQR()" class="btn btn-secondary">
+                                <i class="fas fa-copy"></i> Copy Link
+                            </button>
+                            <button onclick="shareStaticQR()" class="btn btn-info">
+                                <i class="fas fa-share-alt"></i> Share QR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Poster Generator Card -->
+                <div class="tool-card">
+                    <div class="tool-icon" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI Poster Generator</h3>
+                    <p class="tool-description">Create stunning event posters using AI. Describe your vision and let AI design the perfect poster for you.</p>
+                    
+                    <div class="ai-generator">
+                        <div class="ai-input-section">
+                            <div class="form-group">
+                                <label class="form-label">Describe Your Poster Idea</label>
+                                <textarea id="aiDescription" class="form-input" 
+                                          placeholder="Example: 'Modern tech poster for AI hackathon with blue gradient background, computer icons, and motivational text. Include event name and date prominently.'
+                                          
+Example: 'Creative academic poster for research competition with books, lightbulb icon, and professional typography. Use elegant colors.'
+
+Be specific for best results!" rows="5"></textarea>
+                            </div>
+                            
+                            <div class="ai-options">
+                                <div class="form-group">
+                                    <label class="form-label">Style</label>
+                                    <div class="style-chips">
+                                        <span class="style-chip active" data-style="modern">Modern</span>
+                                        <span class="style-chip" data-style="minimal">Minimal</span>
+                                        <span class="style-chip" data-style="creative">Creative</span>
+                                        <span class="style-chip" data-style="professional">Professional</span>
+                                        <span class="style-chip" data-style="vibrant">Vibrant</span>
+                                        <span class="style-chip" data-style="academic">Academic</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Color Palette</label>
+                                    <div class="color-palettes">
+                                        <div class="palette active" data-colors="#2563eb,#3b82f6,#60a5fa">
+                                            <div class="palette-colors">
+                                                <div style="background: #2563eb;"></div>
+                                                <div style="background: #3b82f6;"></div>
+                                                <div style="background: #60a5fa;"></div>
+                                            </div>
+                                            <span>Blue</span>
+                                        </div>
+                                        <div class="palette" data-colors="#10b981,#34d399,#6ee7b7">
+                                            <div class="palette-colors">
+                                                <div style="background: #10b981;"></div>
+                                                <div style="background: #34d399;"></div>
+                                                <div style="background: #6ee7b7;"></div>
+                                            </div>
+                                            <span>Green</span>
+                                        </div>
+                                        <div class="palette" data-colors="#8b5cf6,#a78bfa,#c4b5fd">
+                                            <div class="palette-colors">
+                                                <div style="background: #8b5cf6;"></div>
+                                                <div style="background: #a78bfa;"></div>
+                                                <div style="background: #c4b5fd;"></div>
+                                            </div>
+                                            <span>Purple</span>
+                                        </div>
+                                        <div class="palette" data-colors="#f59e0b,#fbbf24,#fcd34d">
+                                            <div class="palette-colors">
+                                                <div style="background: #f59e0b;"></div>
+                                                <div style="background: #fbbf24;"></div>
+                                                <div style="background: #fcd34d;"></div>
+                                            </div>
+                                            <span>Orange</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="generateAIPoster()" class="btn btn-primary btn-full">
+                                <i class="fas fa-magic"></i> Generate with AI
+                            </button>
+                            
+                            <div class="ai-tips">
+                                <i class="fas fa-lightbulb"></i>
+                                <small><strong>Tip:</strong> Be specific about colors, mood, and elements you want in your poster for better results.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-preview-section" id="aiPreview">
+                            <div class="ai-preview-placeholder">
+                                <i class="fas fa-robot fa-3x"></i>
+                                <h4>AI Poster Preview</h4>
+                                <p>Describe your poster idea and generate with AI to see the preview here</p>
+                                <div class="ai-sample">
+                                    <div class="sample-preview" style="background: linear-gradient(135deg, #2563eb, #8b5cf6);"></div>
+                                    <div class="sample-preview" style="background: linear-gradient(135deg, #10b981, #34d399);"></div>
+                                    <div class="sample-preview" style="background: linear-gradient(135deg, #f59e0b, #ef4444);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Posters Gallery -->
+            <div class="gallery-section" id="gallerySection" style="display: none;">
+                <h3 class="section-title">Your Generated Posters</h3>
+                <div class="posters-grid" id="postersGrid">
+                    <!-- Posters will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!Utils.isAuthenticated()) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            loadEventData();
+            setupEventListeners();
+        });
+
+        let eventData = {};
+        let selectedStyle = 'modern';
+        let selectedColors = '#2563eb,#3b82f6,#60a5fa';
+
+        function loadEventData() {
+            const data = JSON.parse(sessionStorage.getItem('createdEvent'));
+            if (!data) {
+                window.location.href = '/features/features.html';
+                return;
+            }
+            eventData = data;
+            console.log('Event data loaded:', eventData);
+        }
+
+        function setupEventListeners() {
+            // AI style chips
+            document.querySelectorAll('.style-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    document.querySelectorAll('.style-chip').forEach(c => {
+                        c.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    selectedStyle = this.dataset.style;
+                    console.log('Style changed to:', selectedStyle);
+                });
+            });
+
+            // Color palettes
+            document.querySelectorAll('.palette').forEach(palette => {
+                palette.addEventListener('click', function() {
+                    document.querySelectorAll('.palette').forEach(p => {
+                        p.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    selectedColors = this.dataset.colors;
+                    console.log('Colors changed to:', selectedColors);
+                });
+            });
+        }
+
+        function downloadStaticQR() {
+            const qrImage = document.querySelector('#qrPreview img');
+            if (!qrImage) {
+                Utils.showError('QR code not found');
+                return;
+            }
+            
+            const link = document.createElement('a');
+            link.download = `Event_QR_Code_${eventData.event_name.replace(/\s+/g, '_')}.png`;
+            link.href = qrImage.src;
+            link.click();
+            
+            Utils.showSuccessModal(`QR Code downloaded as ${link.download}`);
+        }
+
+        function copyStaticQR() {
+            const registrationLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeeM-BxM0i6WwCyjZx0SwZvnNTiCaOFF4HXcu0tZyy9284fPw/viewform?usp=publish-editor';
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(registrationLink).then(function() {
+                    Utils.showSuccessModal('Registration link copied to clipboard!');
+                }).catch(function(err) {
+                    console.error('Failed to copy: ', err);
+                    Utils.showError('Failed to copy link to clipboard');
+                });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = registrationLink;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    Utils.showSuccessModal('Registration link copied to clipboard!');
+                } catch (err) {
+                    console.error('Fallback copy failed: ', err);
+                    Utils.showError('Failed to copy link');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function shareStaticQR() {
+            const registrationLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeeM-BxM0i6WwCyjZx0SwZvnNTiCaOFF4HXcu0tZyy9284fPw/viewform?usp=publish-editor';
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `Register for ${eventData.event_name}`,
+                    text: `Register for ${eventData.event_name} - ${eventData.theme}\nScan the QR code or use the link below:`,
+                    url: registrationLink
+                }).then(() => {
+                    console.log('Registration shared successfully');
+                }).catch(err => {
+                    console.error('Share failed:', err);
+                    if (err.name !== 'AbortError') {
+                        Utils.showError('Sharing failed. Please copy the link manually.');
+                    }
+                });
+            } else {
+                Utils.showSuccessModal(`Registration Link: ${registrationLink}\n\nCopy and share this link with participants.`);
+            }
+        }
+
+        function generateAIPoster() {
+            const description = document.getElementById('aiDescription').value.trim();
+            if (!description) {
+                Utils.showError('Please describe your poster idea');
+                return;
+            }
+
+            Utils.showLoading();
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                Utils.hideLoading();
+                
+                // Generate AI poster preview
+                const aiPreview = document.getElementById('aiPreview');
+                const colors = selectedColors.split(',');
+                
+                // Create poster concept
+                const posterConcept = createPosterConcept(description, selectedStyle, colors);
+                
+                aiPreview.innerHTML = `
+                    <div class="ai-poster-result">
+                        <div class="poster-header">
+                            <h4>AI Generated Poster</h4>
+                            <span class="poster-style">${selectedStyle} Style</span>
+                        </div>
+                        
+                        <div class="poster-preview" style="background: linear-gradient(135deg, ${colors[0]}, ${colors[1] || colors[0]});">
+                            <div class="poster-content">
+                                <div class="event-title">${eventData.event_name}</div>
+                                <div class="event-type">${eventData.event_type.toUpperCase()}</div>
+                                <div class="event-theme">${eventData.theme}</div>
+                                <div class="event-qr-placeholder">
+                                    <div class="mini-qr"></div>
+                                    <div class="qr-text">Scan to Register</div>
+                                </div>
+                                <div class="design-elements">
+                                    ${posterConcept.elements.map(el => `<span class="design-element">${el}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="poster-details">
+                            <h5>${posterConcept.title}</h5>
+                            <p>${posterConcept.description}</p>
+                            
+                            <div class="poster-features">
+                                <div class="feature">
+                                    <i class="fas fa-palette"></i>
+                                    <span>Color: ${colors[0]}</span>
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-brush"></i>
+                                    <span>Style: ${selectedStyle}</span>
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-expand-alt"></i>
+                                    <span>Size: 1200x1800px</span>
+                                </div>
+                            </div>
+                            
+                            <div class="poster-actions">
+                                <button onclick="downloadPoster()" class="btn btn-success">
+                                    <i class="fas fa-download"></i> Download Poster
+                                </button>
+                                <button onclick="regeneratePoster()" class="btn btn-secondary">
+                                    <i class="fas fa-redo"></i> Regenerate
+                                </button>
+                                <button onclick="customizePoster()" class="btn btn-primary">
+                                    <i class="fas fa-sliders-h"></i> Customize
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Show gallery section
+                document.getElementById('gallerySection').style.display = 'block';
+                addToGallery(posterConcept);
+                
+                Utils.showSuccessModal('AI poster generated successfully!<br>You can download or customize it further.');
+            }, 2000);
+        }
+
+        function createPosterConcept(description, style, colors) {
+            const concepts = {
+                modern: {
+                    title: "Modern Design",
+                    description: "Clean layout with gradient background and contemporary typography",
+                    elements: ["🎨", "💻", "🚀", "⚡"]
+                },
+                minimal: {
+                    title: "Minimal Design",
+                    description: "Simple and elegant design with plenty of white space",
+                    elements: ["⬜", "📄", "✏️", "📍"]
+                },
+                creative: {
+                    title: "Creative Design",
+                    description: "Dynamic and vibrant design with abstract elements",
+                    elements: ["🎨", "✨", "🌈", "🎭"]
+                },
+                professional: {
+                    title: "Professional Design",
+                    description: "Elegant and corporate-style design suitable for formal events",
+                    elements: ["📊", "📈", "💼", "🏢"]
+                },
+                vibrant: {
+                    title: "Vibrant Design",
+                    description: "Energetic and colorful design perfect for youth events",
+                    elements: ["🎉", "🎨", "🌈", "🎯"]
+                },
+                academic: {
+                    title: "Academic Design",
+                    description: "Scholarly design perfect for research and paper presentations",
+                    elements: ["📚", "🎓", "✍️", "💡"]
+                }
+            };
+            
+            const concept = concepts[style] || concepts.modern;
+            
+            // Add some AI magic based on description
+            if (description.toLowerCase().includes('tech') || description.toLowerCase().includes('hackathon')) {
+                concept.elements = ["💻", "🔧", "🚀", "⚡"];
+            } else if (description.toLowerCase().includes('academic') || description.toLowerCase().includes('research')) {
+                concept.elements = ["📚", "🎓", "✍️", "💡"];
+            } else if (description.toLowerCase().includes('creative') || description.toLowerCase().includes('idea')) {
+                concept.elements = ["💡", "🎨", "✨", "🌈"];
+            }
+            
+            return concept;
+        }
+
+        function downloadPoster() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set poster dimensions (standard poster size)
+            canvas.width = 1200;
+            canvas.height = 1800;
+            
+            // Get colors
+            const colors = selectedColors.split(',');
+            
+            // Draw poster based on style
+            drawPoster(ctx, canvas, selectedStyle, colors);
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = `Poster_${eventData.event_name.replace(/\s+/g, '_')}_${selectedStyle}_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            Utils.showSuccessModal(`Poster downloaded as ${link.download}`);
+        }
+
+        function drawPoster(ctx, canvas, style, colors) {
+            // Common poster elements
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, colors[0]);
+            gradient.addColorStop(1, colors[1] || colors[0]);
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw decorative elements based on style
+            drawStyleElements(ctx, canvas, style, colors);
+            
+            // Draw event info
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = 'bold 80px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(eventData.event_name, canvas.width/2, 300);
+            
+            ctx.font = '40px Arial';
+            ctx.fillText(eventData.event_type.toUpperCase(), canvas.width/2, 380);
+            
+            ctx.font = '30px Arial';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillText(eventData.theme, canvas.width/2, 450);
+            
+            // Draw QR code placeholder
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillRect(canvas.width - 250, canvas.height - 250, 200, 200);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '20px Arial';
+            ctx.fillText('Scan to Register', canvas.width - 150, canvas.height - 170);
+            ctx.fillText('@skasc.ac.in', canvas.width - 150, canvas.height - 140);
+            
+            // Draw footer
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '24px Arial';
+            ctx.fillText('Generated by SKASC Event Manager AI', canvas.width/2, canvas.height - 50);
+        }
+
+        function drawStyleElements(ctx, canvas, style, colors) {
+            // Add style-specific decorative elements
+            ctx.globalAlpha = 0.1;
+            
+            switch(style) {
+                case 'modern':
+                    // Modern geometric shapes
+                    for(let i = 0; i < 20; i++) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            Math.random() * canvas.width,
+                            Math.random() * canvas.height,
+                            30 + Math.random() * 70,
+                            0, Math.PI * 2
+                        );
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fill();
+                    }
+                    break;
+                    
+                case 'minimal':
+                    // Simple lines and dots
+                    for(let i = 0; i < 10; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'creative':
+                    // Abstract shapes
+                    for(let i = 0; i < 15; i++) {
+                        ctx.beginPath();
+                        for(let j = 0; j < 5; j++) {
+                            const angle = (j * Math.PI * 2) / 5;
+                            const radius = 40 + Math.random() * 60;
+                            const x = Math.random() * canvas.width + Math.cos(angle) * radius;
+                            const y = Math.random() * canvas.height + Math.sin(angle) * radius;
+                            if(j === 0) ctx.moveTo(x, y);
+                            else ctx.lineTo(x, y);
+                        }
+                        ctx.closePath();
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fill();
+                    }
+                    break;
+                    
+                case 'vibrant':
+                    // Colorful circles
+                    for(let i = 0; i < 25; i++) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            Math.random() * canvas.width,
+                            Math.random() * canvas.height,
+                            20 + Math.random() * 50,
+                            0, Math.PI * 2
+                        );
+                        ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                        ctx.fill();
+                    }
+                    break;
+            }
+            
+            ctx.globalAlpha = 1;
+        }
+
+        function regeneratePoster() {
+            // Clear description and regenerate
+            document.getElementById('aiDescription').value = '';
+            document.getElementById('aiDescription').focus();
+            document.getElementById('aiPreview').innerHTML = `
+                <div class="ai-preview-placeholder">
+                    <i class="fas fa-robot fa-3x"></i>
+                    <h4>AI Poster Preview</h4>
+                    <p>Describe your poster idea and generate with AI to see the preview here</p>
+                </div>
+            `;
+        }
+
+        function customizePoster() {
+            Utils.showSuccessModal('Customization options coming soon!<br>For now, try regenerating with different styles and colors.');
+        }
+
+        function addToGallery(posterConcept) {
+            const gallery = document.getElementById('postersGrid');
+            const colors = selectedColors.split(',');
+            
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            galleryItem.innerHTML = `
+                <div class="gallery-preview" style="background: linear-gradient(135deg, ${colors[0]}, ${colors[1] || colors[0]});">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                </div>
+                <div class="gallery-info">
+                    <h5>${posterConcept.title}</h5>
+                    <p>${eventData.event_name}</p>
+                    <div class="gallery-tags">
+                        <span class="tag">${selectedStyle}</span>
+                        <span class="tag">${eventData.event_type}</span>
+                    </div>
+                </div>
+            `;
+            
+            gallery.prepend(galleryItem);
+        }
+    </script>
+
+    <style>
+        .tools-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+
+        .tool-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        .tool-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: #1f2937;
+            font-size: 1.5rem;
+        }
+
+        .tool-description {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* QR Code Generator Styles */
+        .qr-generator {
+            margin-top: 1.5rem;
+        }
+
+        .qr-preview-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            min-height: 300px;
+        }
+
+        .qr-placeholder {
+            text-align: center;
+            color: #9ca3af;
+            padding: 2rem;
+        }
+
+        .qr-placeholder i {
+            margin-bottom: 1rem;
+            color: #d1d5db;
+            font-size: 3rem;
+        }
+
+        .qr-placeholder p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .qr-loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+        }
+
+        #qrPreview img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            background: white;
+            display: block;
+        }
+
+        .qr-options {
+            margin-bottom: 1.5rem;
+        }
+
+        .qr-info {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .usage-tips {
+            background: #f0f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .qr-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        .form-hint {
+            display: block;
+            margin-top: 0.25rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* AI Generator Styles */
+        .ai-generator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .ai-generator {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ai-input-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-options {
+            margin: 1.5rem 0;
+        }
+
+        .style-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .style-chip {
+            padding: 0.5rem 1rem;
+            background: #f3f4f6;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .style-chip.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .style-chip:hover:not(.active) {
+            background: #e5e7eb;
+        }
+
+        .color-palettes {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .palette {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .palette.active {
+            background: #f3f4f6;
+        }
+
+        .palette:hover {
+            background: #f9fafb;
+        }
+
+        .palette-colors {
+            display: flex;
+            gap: 2px;
+        }
+
+        .palette-colors div {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .ai-tips {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-radius: 8px;
+            display: flex;
+            gap: 0.5rem;
+            color: #075985;
+        }
+
+        .ai-tips i {
+            color: #0ea5e9;
+        }
+
+        .ai-preview-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        .ai-preview-placeholder {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+        }
+
+        .ai-preview-placeholder i {
+            margin-bottom: 1rem;
+            color: #d1d5db;
+            font-size: 3rem;
+        }
+
+        .ai-preview-placeholder h4 {
+            margin: 0.5rem 0;
+            color: #4b5563;
+            font-size: 1.2rem;
+        }
+
+        .ai-preview-placeholder p {
+            margin: 0 0 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .ai-sample {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .sample-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            opacity: 0.7;
+        }
+
+        /* AI Result Styles */
+        .ai-poster-result {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .poster-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .poster-style {
+            background: #8b5cf6;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .poster-preview {
+            border-radius: 12px;
+            overflow: hidden;
+            height: 250px;
+            position: relative;
+        }
+
+        .poster-content {
+            padding: 1.5rem;
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .event-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-type {
+            background: rgba(255,255,255,0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-theme {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .event-qr-placeholder {
+            margin: 1rem 0;
+        }
+
+        .mini-qr {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            margin: 0 auto 0.5rem;
+        }
+
+        .qr-text {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .design-elements {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .design-element {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .poster-details {
+            margin-top: 1.5rem;
+        }
+
+        .poster-details h5 {
+            margin: 0 0 0.5rem 0;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+
+        .poster-details p {
+            color: #6b7280;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .poster-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            color: #4b5563;
+            font-size: 0.8rem;
+        }
+
+        .feature i {
+            color: #2563eb;
+            margin-bottom: 0.3rem;
+            font-size: 1rem;
+        }
+
+        .poster-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        /* Gallery Styles */
+        .gallery-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .posters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .gallery-preview {
+            height: 150px;
+            position: relative;
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-info {
+            padding: 1rem;
+        }
+
+        .gallery-info h5 {
+            margin: 0 0 0.3rem 0;
+            color: #1f2937;
+            font-size: 1rem;
+        }
+
+        .gallery-info p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .gallery-tags {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: #f3f4f6;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #4b5563;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-info {
+            background: #0ea5e9;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #0284c7;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        textarea.form-input {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        select.form-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        /* Utilities */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-gray-600 {
+            color: #6b7280;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+    </style>
+</body>
+</html>

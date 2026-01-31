@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Hackathon - SKASC Event Manager</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-full {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        textarea.form-input {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .btn-large {
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mt-8 {
+            margin-top: 2rem;
+        }
+
+        /* Required field indicator */
+        .required::after {
+            content: " *";
+            color: #ef4444;
+        }
+
+        /* Loading overlay for form submission */
+        .form-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .form-loading.active {
+            display: flex;
+        }
+
+        .form-loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: #2563eb;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .form-loading p {
+            margin-top: 1rem;
+            color: #4b5563;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-laptop-code"></i>
+                    <span>Create Hackathon</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="/dashboard/main-dashboard.html" class="nav-link">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Loading overlay -->
+        <div id="formLoading" class="form-loading">
+            <div class="form-loading-spinner"></div>
+            <p id="loadingMessage">Creating Hackathon...</p>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="form-container">
+                <h2 class="section-title text-center mb-6">Hackathon Details</h2>
+                
+                <form id="hackathonForm">
+                    <div class="form-grid">
+                        <div class="form-group form-full">
+                            <label class="form-label required">Hackathon Name</label>
+                            <input type="text" id="event_name" class="form-input" 
+                                   placeholder="e.g., CodeWars 2024, HackFest Pro" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Team Member Limit</label>
+                            <input type="number" id="team_limit" class="form-input" 
+                                   placeholder="e.g., 4" min="1" max="10" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Theme</label>
+                            <input type="text" id="theme" class="form-input" 
+                                   placeholder="e.g., AI & Machine Learning, Sustainability" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Venue/Location</label>
+                            <input type="text" id="venue" class="form-input" 
+                                   placeholder="e.g., SKASC Auditorium, Online">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Registration Fee (₹)</label>
+                            <input type="number" id="registration_fee" class="form-input" 
+                                   placeholder="e.g., 100" min="0" value="0">
+                        </div>
+
+                        <div class="form-group form-full">
+                            <label class="form-label">Description</label>
+                            <textarea id="description" class="form-input" 
+                                      placeholder="Describe your hackathon in detail..."
+                                      rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group form-full">
+                            <label class="form-label">Problem Statement/Challenge</label>
+                            <textarea id="problem_statement" class="form-input" 
+                                      placeholder="Describe the main challenge or problem to solve..."
+                                      rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Start Date & Time</label>
+                            <input type="datetime-local" id="start_date" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">End Date & Time</label>
+                            <input type="datetime-local" id="end_date" class="form-input">
+                        </div>
+
+                        <div class="form-group form-full">
+                            <label class="form-label">Prizes & Rewards</label>
+                            <textarea id="prizes" class="form-input" 
+                                      placeholder="1st Prize: ₹50,000
+2nd Prize: ₹30,000
+3rd Prize: ₹20,000
+Special Prizes: Internship Opportunities"
+                                      rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group form-full">
+                            <label class="form-label">Rules & Guidelines</label>
+                            <textarea id="rules" class="form-input" 
+                                      placeholder="1. Teams must consist of 2-4 members
+2. All code must be original
+3. No pre-written code allowed
+4. Judging criteria: Innovation, Implementation, Presentation"
+                                      rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group form-full">
+                            <label class="form-label">Registration Form Link (Optional)</label>
+                            <input type="url" id="google_form_link" class="form-input" 
+                                   placeholder="https://docs.google.com/forms/d/e/...">
+                            <small style="color: #6b7280; font-size: 0.85rem; margin-top: 0.25rem; display: block;">
+                                Add your Google Form link if you have one, or we'll use a default one.
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-8">
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <i class="fas fa-rocket"></i> Create Hackathon
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            if (!Utils.isAuthenticated()) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            const form = document.getElementById('hackathonForm');
+            const formLoading = document.getElementById('formLoading');
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            // Check if we're editing an existing event
+            const editingEvent = JSON.parse(sessionStorage.getItem('editingEvent'));
+            const editingEventId = sessionStorage.getItem('editingEventId');
+            
+            if (editingEvent) {
+                // Update form title
+                document.querySelector('.nav-brand span').textContent = 'Edit Hackathon';
+                document.querySelector('.section-title').textContent = 'Edit Hackathon Details';
+                document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Update Hackathon';
+                
+                // Fill form with existing data
+                document.getElementById('event_name').value = editingEvent.event_name || '';
+                document.getElementById('team_limit').value = editingEvent.team_limit || 4;
+                document.getElementById('theme').value = editingEvent.theme || '';
+                document.getElementById('venue').value = editingEvent.venue || '';
+                document.getElementById('registration_fee').value = editingEvent.registration_fee || 0;
+                document.getElementById('description').value = editingEvent.description || '';
+                document.getElementById('problem_statement').value = editingEvent.problem_statement || '';
+                document.getElementById('start_date').value = editingEvent.start_date || '';
+                document.getElementById('end_date').value = editingEvent.end_date || '';
+                document.getElementById('prizes').value = editingEvent.prizes || '';
+                document.getElementById('rules').value = editingEvent.rules || '';
+                document.getElementById('google_form_link').value = editingEvent.google_form_link || '';
+            }
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const eventData = {
+                    event_type: 'hackathon',
+                    event_name: document.getElementById('event_name').value,
+                    team_limit: parseInt(document.getElementById('team_limit').value),
+                    theme: document.getElementById('theme').value,
+                    venue: document.getElementById('venue').value,
+                    registration_fee: parseInt(document.getElementById('registration_fee').value) || 0,
+                    description: document.getElementById('description').value,
+                    problem_statement: document.getElementById('problem_statement').value,
+                    start_date: document.getElementById('start_date').value,
+                    end_date: document.getElementById('end_date').value,
+                    prizes: document.getElementById('prizes').value,
+                    rules: document.getElementById('rules').value,
+                    google_form_link: document.getElementById('google_form_link').value || 
+                        'https://docs.google.com/forms/d/e/1FAIpQLSeeM-BxM0i6WwCyjZx0SwZvnNTiCaOFF4HXcu0tZyy9284fPw/viewform?usp=publish-editor'
+                };
+
+                // Validate required fields
+                if (!eventData.event_name || !eventData.team_limit || !eventData.theme) {
+                    Utils.showError('Please fill all required fields (marked with *)');
+                    return;
+                }
+
+                // Show loading
+                formLoading.classList.add('active');
+                loadingMessage.textContent = editingEvent ? 'Updating Hackathon...' : 'Creating Hackathon...';
+
+                try {
+                    // Simulate API delay
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    let success = false;
+                    let savedEvent = null;
+                    
+                    if (editingEventId) {
+                        // Update existing event
+                        success = EventManager.updateEvent(editingEventId, eventData);
+                        if (success) {
+                            savedEvent = EventManager.getEventById(editingEventId);
+                        }
+                    } else {
+                        // Create new event
+                        const eventId = EventManager.saveEvent(eventData);
+                        success = !!eventId;
+                        if (success) {
+                            savedEvent = EventManager.getEventById(eventId);
+                        }
+                    }
+
+                    if (success && savedEvent) {
+                        // Update loading message
+                        loadingMessage.textContent = 'Success! Redirecting...';
+                        
+                        // Save to session storage for event details page
+                        sessionStorage.setItem('selectedEvent', JSON.stringify(savedEvent));
+                        sessionStorage.removeItem('editingEvent');
+                        sessionStorage.removeItem('editingEventId');
+                        
+                        // Show success message
+                        setTimeout(() => {
+                            formLoading.classList.remove('active');
+                            
+                            const actionText = editingEvent ? 'updated' : 'created';
+                            const modalMessage = `
+                                Hackathon ${actionText} successfully!<br><br>
+                                <strong>Registration Form Link:</strong><br>
+                                <a href="${savedEvent.google_form_link}" 
+                                   target="_blank" 
+                                   style="color: #2563eb; text-decoration: underline; word-break: break-all;">
+                                    ${savedEvent.google_form_link}
+                                </a>
+                                <br><br>
+                                <small>This is your event registration form. Share it with participants!</small>
+                            `;
+                            
+                            Utils.showSuccessModal(modalMessage, () => {
+                                // Redirect based on context
+                                if (editingEvent) {
+                                    // If editing, go to event details
+                                    sessionStorage.setItem('selectedEventId', savedEvent.id);
+                                    window.location.href = '/dashboard/dashboard.html';
+                                } else {
+                                    // If creating new, go to main dashboard
+                                    window.location.href = '/dashboard/main-dashboard.html';
+                                }
+                            });
+                            
+                        }, 1000);
+                    } else {
+                        throw new Error('Failed to save event');
+                    }
+
+                } catch (error) {
+                    formLoading.classList.remove('active');
+                    console.error('Error:', error);
+                    Utils.showError(error.message || 'Failed to save event. Please try again.');
+                }
+            });
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().slice(0, 16);
+            document.getElementById('start_date').min = today;
+            document.getElementById('end_date').min = today;
+            
+            // Update end date min when start date changes
+            document.getElementById('start_date').addEventListener('change', function() {
+                document.getElementById('end_date').min = this.value;
+            });
+        });
+        
+        // Function to get a default Google Form link based on event type
+        function getDefaultGoogleFormLink() {
+            return 'https://docs.google.com/forms/d/e/1FAIpQLSeeM-BxM0i6WwCyjZx0SwZvnNTiCaOFF4HXcu0tZyy9284fPw/viewform?usp=publish-editor';
+        }
+    </script>
+</body>
+</html>

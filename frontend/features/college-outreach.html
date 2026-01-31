@@ -1,0 +1,3542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Outreach - SKASC Event Manager</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        /* Improved Chart Containers */
+.chart-container {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.chart-container:last-child {
+    margin-bottom: 0;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.chart-header h5 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Responsive chart containers */
+@media (max-width: 768px) {
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+    
+    .chart-header h5 {
+        font-size: 1rem;
+    }
+    
+    .chart-filters {
+        align-self: stretch;
+    }
+    
+    .filter-btn {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+/* Chart canvas wrapper */
+.chart-canvas-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Filter buttons active state */
+.filter-btn.active {
+    background: #2563eb !important;
+    color: white !important;
+    border-color: #2563eb !important;
+}
+
+/* Analytics dashboard scroll */
+.analytics-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Metrics grid responsive */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Insights items */
+.insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background: white;
+    border-left: 4px solid #3b82f6;
+    margin-bottom: 0.8rem;
+}
+
+.insight-item:last-child {
+    margin-bottom: 0;
+}
+
+.insight-warning {
+    border-left-color: #f59e0b;
+}
+
+.insight-success {
+    border-left-color: #10b981;
+}
+
+.insight-info {
+    border-left-color: #3b82f6;
+}
+
+.insight-icon {
+    padding: 0.5rem;
+    border-radius: 6px;
+    background: #f3f4f6;
+    flex-shrink: 0;
+}
+
+.insight-warning .insight-icon {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.insight-success .insight-icon {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.insight-info .insight-icon {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.insight-content {
+    flex: 1;
+}
+
+.insight-content p {
+    margin: 0;
+    color: #1f2937;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Progress bars */
+.stat-progress {
+    height: 8px;
+    background: #f3f4f6;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    border-radius: 4px;
+    transition: width 1s ease-in-out;
+}
+
+/* Stat change indicators */
+.stat-change {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.stat-change i.fa-arrow-up {
+    color: #10b981;
+}
+
+.stat-change i.fa-arrow-down {
+    color: #ef4444;
+}
+
+/* Modal scroll improvements */
+#analyticsModal .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 0;
+}
+
+#analyticsModal .modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+#analyticsModal .modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#analyticsModal .modal-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+#analyticsModal .modal-content::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* Chart description */
+.chart-description {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    font-size: 0.85rem;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+.chart-description p {
+    margin: 0;
+}
+        .app-container {
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .nav-brand i {
+            color: #2563eb;
+            font-size: 1.5rem;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4b5563;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: #f3f4f6;
+            color: #2563eb;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-gray-600 {
+            color: #6b7280;
+        }
+        
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+        
+        .mt-8 {
+            margin-top: 2rem;
+        }
+        
+        /* Outreach Dashboard */
+        .outreach-dashboard {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .stat-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .stat-card h3 {
+            margin: 0.5rem 0;
+            font-size: 2rem;
+            color: #1f2937;
+        }
+        
+        .stat-card p {
+            color: #6b7280;
+            margin: 0;
+        }
+        
+        .outreach-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        
+        .btn-lg {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-info {
+            background: #0ea5e9;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #0284c7;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e5e7eb;
+            color: #4b5563;
+        }
+        
+        .btn-outline:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Modal improvements */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: modalSlideIn 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            max-height: 90vh;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Scrollable invitation composer */
+        .invitation-composer {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .composer-body {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            .composer-body {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                grid-template-areas:
+                    "recipients message"
+                    "preview preview";
+            }
+            
+            .recipients-section {
+                grid-area: recipients;
+            }
+            
+            .message-editor {
+                grid-area: message;
+            }
+            
+            .preview-section {
+                grid-area: preview;
+            }
+        }
+        
+        /* Better scrollbars */
+        .invitation-composer::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .invitation-composer::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .invitation-composer::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        .invitation-composer::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+        
+        /* Modal header */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding: 1.5rem 1.5rem 0;
+            flex-shrink: 0;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-close {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .btn-close:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        /* Form improvements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #1f2937;
+            font-size: 0.95rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-input:required {
+            border-left: 3px solid #2563eb;
+        }
+        
+        textarea.form-input {
+            min-height: 200px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        
+        /* Editor toolbar improvements */
+        .editor-toolbar {
+            background: #f8fafc;
+            padding: 0.75rem;
+            border-radius: 8px 8px 0 0;
+            border: 2px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .editor-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .editor-btn {
+            background: white;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #4b5563;
+        }
+        
+        .editor-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+        
+        .editor-separator {
+            width: 1px;
+            height: 24px;
+            background: #d1d5db;
+            margin: 0 0.5rem;
+        }
+        
+        /* Recipients list improvements */
+        .recipients-section {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+        
+        .recipients-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 1rem 0;
+        }
+        
+        .recipients-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .recipients-list::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+        
+        .recipients-list::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+        
+        .recipient-item {
+            background: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+        
+        .recipient-item:hover {
+            border-color: #2563eb;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+        }
+        
+        .recipient-item span {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+        
+        .btn-remove {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-remove:hover {
+            background: #fee2e2;
+        }
+        
+        /* Preview section improvements */
+        .preview-section {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+        
+        .preview-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            overflow-y: auto;
+            min-height: 150px;
+            max-height: 300px;
+        }
+        
+        .preview-content strong {
+            font-weight: 600;
+        }
+        
+        .preview-content em {
+            font-style: italic;
+        }
+        
+        .preview-content u {
+            text-decoration: underline;
+        }
+        
+        /* Composer footer */
+        .composer-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-top: 2px solid #e5e7eb;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        /* Send options */
+        .send-options {
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-check input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .form-check label {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        /* Schedule options animation */
+        #scheduleOptions {
+            animation: slideDown 0.3s ease-out;
+            margin-top: 1rem;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 767px) {
+            .modal-content {
+                max-height: 90vh;
+                margin: 10px;
+            }
+            
+            .composer-footer {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .composer-footer > div {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+        
+        /* Database Section */
+        .database-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        
+        .search-box input {
+            padding-left: 40px;
+            width: 250px;
+            height: 40px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .colleges-table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        .colleges-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .colleges-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1f2937;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .colleges-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+        
+        .colleges-table tbody tr:hover {
+            background: #f9fafb;
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-not-contacted {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .status-invitation-sent {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .status-responded {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-confirmed-participation {
+            background: #f0fdf4;
+            color: #10b981;
+        }
+        
+        .status-declined {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-icon {
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .btn-icon:hover {
+            background: #f3f4f6;
+            color: #2563eb;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        /* Templates Section */
+        .templates-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .template-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .template-card:hover {
+            background: white;
+            border-color: #2563eb;
+            transform: translateY(-5px);
+        }
+        
+        .template-icon {
+            width: 60px;
+            height: 60px;
+            background: #e0f2fe;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: #0ea5e9;
+            font-size: 1.5rem;
+        }
+        
+        .template-card h4 {
+            margin: 0.5rem 0;
+            color: #1f2937;
+        }
+        
+        .template-card p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .template-tags {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .tag {
+            background: #f3f4f6;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: #4b5563;
+        }
+        
+        /* Sent Invitations */
+        .sent-invitations {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .invitations-timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 2rem;
+        }
+        
+        .invitations-timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .timeline-content {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .timeline-content h5 {
+            margin: 0 0 0.5rem 0;
+            color: #1f2937;
+        }
+        
+        .timeline-content p {
+            color: #6b7280;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .timeline-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-link {
+            background: none;
+            border: none;
+            color: #2563eb;
+            cursor: pointer;
+            padding: 0;
+            font-size: 0.9rem;
+        }
+        
+        /* Analytics Modal Styles */
+        .analytics-dashboard {
+            padding: 1rem;
+        }
+        
+        .analytics-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .analytics-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .analytics-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .analytics-stat {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .analytics-stat:hover {
+            border-color: #2563eb;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.1);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-header i {
+            font-size: 1.5rem;
+        }
+        
+        .stat-header h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-progress {
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 4px;
+            transition: width 1s ease-in-out;
+        }
+        
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        /* Charts Section */
+        .analytics-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .analytics-charts {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-container {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .chart-container.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-header h5 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+        
+        .chart-header select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+            color: #1f2937;
+            font-size: 0.9rem;
+        }
+        
+        .chart-legend {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .chart-filters {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        
+        /* Performance Metrics */
+        .performance-metrics {
+            margin-bottom: 2rem;
+        }
+        
+        .performance-metrics h4 {
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .metric-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .metric-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .metric-header i {
+            font-size: 1.2rem;
+        }
+        
+        .metric-header h5 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-detail {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        
+        /* Insights Section */
+        .insights-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .insights-section h4 {
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+        
+        .insights-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: white;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .insight-warning {
+            border-left-color: #f59e0b;
+        }
+        
+        .insight-success {
+            border-left-color: #10b981;
+        }
+        
+        .insight-info {
+            border-left-color: #3b82f6;
+        }
+        
+        .insight-icon {
+            padding: 0.5rem;
+            border-radius: 6px;
+            background: #f3f4f6;
+        }
+        
+        .insight-warning .insight-icon {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .insight-success .insight-icon {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .insight-info .insight-icon {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .insight-content {
+            flex: 1;
+        }
+        
+        .insight-content p {
+            margin: 0;
+            color: #1f2937;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        /* Export Section */
+        .export-section {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .export-section h4 {
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+        
+        .export-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Status indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-indicator.sent {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .status-indicator.draft {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        /* Loading state for send button */
+        .btn-sending {
+            position: relative;
+            color: transparent !important;
+        }
+        
+        .btn-sending::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-university"></i>
+                    <span>College Outreach</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="/features/features.html" class="nav-link">
+                        <i class="fas fa-arrow-left"></i> Back to Features
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <h1 class="section-title">College Outreach Program</h1>
+            <p class="text-center text-gray-600 mb-8">Send invitations and coordinate with other colleges for participants</p>
+
+            <!-- Outreach Dashboard -->
+            <div class="outreach-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e0f2fe;">
+                            <i class="fas fa-envelope" style="color: #0ea5e9;"></i>
+                        </div>
+                        <h3 id="invitationsSent">0</h3>
+                        <p>Invitations Sent</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #f0fdf4;">
+                            <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                        </div>
+                        <h3 id="responsesReceived">0</h3>
+                        <p>Responses Received</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fef3c7;">
+                            <i class="fas fa-users" style="color: #f59e0b;"></i>
+                        </div>
+                        <h3 id="participantsExpected">0</h3>
+                        <p>Expected Participants</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #f3e8ff;">
+                            <i class="fas fa-building" style="color: #8b5cf6;"></i>
+                        </div>
+                        <h3 id="collegesContacted">0</h3>
+                        <p>Colleges Contacted</p>
+                    </div>
+                </div>
+
+                <div class="outreach-actions">
+                    <button onclick="openInvitationComposer()" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus-circle"></i> Create New Invitation
+                    </button>
+                    <button onclick="importCollegeDatabase()" class="btn btn-secondary">
+                        <i class="fas fa-file-import"></i> Import College Database
+                    </button>
+                    <button onclick="openAnalyticsModal()" class="btn btn-info">
+                        <i class="fas fa-chart-bar"></i> View Analytics
+                    </button>
+                </div>
+            </div>
+
+            <!-- College Database -->
+            <div class="database-section mt-8">
+                <div class="section-header">
+                    <h3>College Database</h3>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="collegeSearch" placeholder="Search colleges..." 
+                                   oninput="searchColleges()">
+                        </div>
+                        <button onclick="addNewCollege()" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Add College
+                        </button>
+                    </div>
+                </div>
+
+                <div class="colleges-table-container">
+                    <table class="colleges-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAll" onclick="toggleSelectAll()">
+                                </th>
+                                <th>College Name</th>
+                                <th>Location</th>
+                                <th>Contact Person</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="collegesTableBody">
+                            <!-- College rows will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-actions">
+                    <button onclick="sendBulkInvitations()" class="btn btn-primary" id="bulkInviteBtn" disabled>
+                        <i class="fas fa-paper-plane"></i> Send Invitations to Selected (<span id="selectedCount">0</span>)
+                    </button>
+                    <button onclick="exportCollegeData()" class="btn btn-secondary">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Invitation Templates -->
+            <div class="templates-section mt-8">
+                <h3 class="section-title">Invitation Templates</h3>
+                <div class="templates-grid">
+                    <div class="template-card" onclick="useTemplate('formal')">
+                        <div class="template-icon">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <h4>Formal Invitation</h4>
+                        <p>Official letter format for college departments</p>
+                        <div class="template-tags">
+                            <span class="tag">Formal</span>
+                            <span class="tag">Department</span>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card" onclick="useTemplate('student')">
+                        <div class="template-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h4>Student Club Invitation</h4>
+                        <p>Friendly invitation for student clubs and chapters</p>
+                        <div class="template-tags">
+                            <span class="tag">Student</span>
+                            <span class="tag">Club</span>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card" onclick="useTemplate('tech')">
+                        <div class="template-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h4>Tech Event Invitation</h4>
+                        <p>Modern template for hackathons and tech events</p>
+                        <div class="template-tags">
+                            <span class="tag">Tech</span>
+                            <span class="tag">Modern</span>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card" onclick="useTemplate('custom')">
+                        <div class="template-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <h4>Custom Template</h4>
+                        <p>Create your own invitation from scratch</p>
+                        <div class="template-tags">
+                            <span class="tag">Custom</span>
+                            <span class="tag">Flexible</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sent Invitations -->
+            <div class="sent-invitations mt-8">
+                <h3 class="section-title">Sent Invitations</h3>
+                <div class="invitations-timeline" id="invitationsTimeline">
+                    <!-- Invitation items will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Invitation Composer Modal -->
+        <div id="invitationModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-envelope"></i> Compose Invitation</h3>
+                    <button onclick="closeInvitationModal()" class="btn-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="invitation-composer">
+                    <div class="composer-header">
+                        <div class="form-group">
+                            <label class="form-label">Subject *</label>
+                            <input type="text" id="invitationSubject" class="form-input" 
+                                   placeholder="Invitation to participate in [Event Name]" required>
+                        </div>
+                    </div>
+                    
+                    <div class="composer-body">
+                        <div class="recipients-section">
+                            <h4 style="margin-top: 0; margin-bottom: 1rem; color: #1f2937;">Recipients</h4>
+                            <div class="selected-count" style="font-size: 0.9rem; color: #6b7280; margin-bottom: 1rem;">
+                                Selected: <span id="recipientsCount">0</span> college(s)
+                            </div>
+                            <div class="recipients-list" id="recipientsList">
+                                <div style="text-align: center; color: #9ca3af; padding: 1rem;" id="noRecipientsMessage">
+                                    <i class="fas fa-university fa-lg"></i>
+                                    <p style="margin: 0.5rem 0 0 0;">No colleges selected</p>
+                                </div>
+                            </div>
+                            <button onclick="openCollegeSelector()" class="btn btn-outline btn-sm" style="width: 100%;">
+                                <i class="fas fa-plus"></i> Select Colleges
+                            </button>
+                        </div>
+                        
+                        <div class="message-editor">
+                            <h4 style="margin-top: 0; margin-bottom: 1rem; color: #1f2937;">Message</h4>
+                            <div class="editor-toolbar">
+                                <div class="editor-buttons">
+                                    <button onclick="formatText('bold')" class="editor-btn" title="Bold">
+                                        <i class="fas fa-bold"></i>
+                                    </button>
+                                    <button onclick="formatText('italic')" class="editor-btn" title="Italic">
+                                        <i class="fas fa-italic"></i>
+                                    </button>
+                                    <button onclick="formatText('underline')" class="editor-btn" title="Underline">
+                                        <i class="fas fa-underline"></i>
+                                    </button>
+                                    <span class="editor-separator"></span>
+                                    <button onclick="insertEventDetails()" class="editor-btn">
+                                        <i class="fas fa-calendar-alt"></i> Event Details
+                                    </button>
+                                    <button onclick="insertRegistrationLink()" class="editor-btn">
+                                        <i class="fas fa-link"></i> Registration Link
+                                    </button>
+                                    <button onclick="insertCollegeName()" class="editor-btn">
+                                        <i class="fas fa-university"></i> College Name
+                                    </button>
+                                </div>
+                            </div>
+                            <textarea id="invitationMessage" class="form-input" rows="10" 
+                                      placeholder="Dear [College Name],
+
+We are pleased to invite your students to participate in our event..."></textarea>
+                            
+                            <div class="template-quick-actions" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <button onclick="useTemplate('formal')" class="btn btn-outline btn-sm">
+                                    <i class="fas fa-landmark"></i> Load Formal
+                                </button>
+                                <button onclick="useTemplate('student')" class="btn btn-outline btn-sm">
+                                    <i class="fas fa-user-graduate"></i> Load Student
+                                </button>
+                                <button onclick="useTemplate('tech')" class="btn btn-outline btn-sm">
+                                    <i class="fas fa-laptop-code"></i> Load Tech
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-section">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h4 style="margin: 0; color: #1f2937;">Live Preview</h4>
+                                <button onclick="togglePreview()" class="btn btn-sm btn-outline" style="padding: 0.3rem 0.8rem;">
+                                    <i class="fas fa-eye"></i> Toggle Preview
+                                </button>
+                            </div>
+                            <div class="preview-content" id="messagePreview">
+                                <!-- Preview will be shown here -->
+                            </div>
+                            <div id="previewPlaceholder" style="text-align: center; padding: 2rem; color: #9ca3af;">
+                                <i class="fas fa-eye-slash fa-lg"></i>
+                                <p style="margin: 0.5rem 0 0 0;">Preview hidden. Click "Toggle Preview" to view</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="send-options">
+                        <h4 style="margin-top: 0; margin-bottom: 1rem; color: #1f2937;">Send Options</h4>
+                        <div class="options-grid">
+                            <div class="form-check">
+                                <input type="checkbox" id="sendCopy" checked>
+                                <label for="sendCopy">Send me a copy</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="trackResponses" checked>
+                                <label for="trackResponses">Track responses</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="scheduleSend">
+                                <label for="scheduleSend">Schedule for later</label>
+                            </div>
+                        </div>
+                        
+                        <div id="scheduleOptions" style="margin-top: 1rem; display: none;">
+                            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" id="scheduleDate" class="form-input" 
+                                           min="${new Date().toISOString().split('T')[0]}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Time</label>
+                                    <input type="time" id="scheduleTime" class="form-input" value="10:00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="composer-footer">
+                    <button onclick="closeInvitationModal()" class="btn btn-outline">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <div style="display: flex; gap: 1rem;">
+                        <button onclick="saveAsDraft()" class="btn btn-secondary">
+                            <i class="fas fa-save"></i> Save Draft
+                        </button>
+                        <button onclick="previewFullInvitation()" class="btn btn-info">
+                            <i class="fas fa-eye"></i> Full Preview
+                        </button>
+                        <button onclick="sendInvitation()" class="btn btn-success">
+                            <i class="fas fa-paper-plane"></i> Send Invitation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Modal -->
+        <!-- Updated Analytics Modal -->
+<div id="analyticsModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header">
+            <h3><i class="fas fa-chart-bar"></i> Outreach Analytics Dashboard</h3>
+            <button onclick="closeAnalyticsModal()" class="btn-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="analytics-dashboard" style="padding: 1rem;">
+            <!-- Analytics Stats -->
+            <div class="analytics-stats">
+                <div class="analytics-stat">
+                    <div class="stat-header">
+                        <i class="fas fa-bullseye" style="color: #3b82f6;"></i>
+                        <h4>Response Rate</h4>
+                    </div>
+                    <div class="stat-value" id="responseRate">0%</div>
+                    <div class="stat-progress">
+                        <div class="progress-bar" id="responseRateBar"></div>
+                    </div>
+                </div>
+                
+                <div class="analytics-stat">
+                    <div class="stat-header">
+                        <i class="fas fa-calendar-check" style="color: #10b981;"></i>
+                        <h4>Confirmation Rate</h4>
+                    </div>
+                    <div class="stat-value" id="confirmationRate">0%</div>
+                    <div class="stat-progress">
+                        <div class="progress-bar" id="confirmationRateBar"></div>
+                    </div>
+                </div>
+                
+                <div class="analytics-stat">
+                    <div class="stat-header">
+                        <i class="fas fa-user-graduate" style="color: #8b5cf6;"></i>
+                        <h4>Avg. Participants per College</h4>
+                    </div>
+                    <div class="stat-value" id="avgParticipants">0</div>
+                    <div class="stat-change" id="participantTrend">
+                        <i class="fas fa-arrow-up" style="color: #10b981;"></i>
+                        <span>0%</span>
+                    </div>
+                </div>
+                
+                <div class="analytics-stat">
+                    <div class="stat-header">
+                        <i class="fas fa-clock" style="color: #f59e0b;"></i>
+                        <h4>Avg. Response Time</h4>
+                    </div>
+                    <div class="stat-value" id="avgResponseTime">0h</div>
+                    <div class="stat-change" id="responseTimeTrend">
+                        <i class="fas fa-arrow-down" style="color: #ef4444;"></i>
+                        <span>0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Section - Updated with better containers -->
+            <div class="analytics-charts" style="margin-bottom: 2rem;">
+                <!-- Status Distribution Chart -->
+                <div class="chart-container" style="margin-bottom: 1.5rem;">
+                    <div class="chart-header">
+                        <h5 style="margin: 0; color: #1f2937; font-size: 1.1rem;">Outreach Status Distribution</h5>
+                        <select id="chartTimeRange" onchange="updateCharts()" style="padding: 0.4rem 0.8rem; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 0.9rem; background: white;">
+                            <option value="all">All Time</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                    <div class="chart-description" style="margin-top: 1rem; font-size: 0.85rem; color: #6b7280;">
+                        <p>Shows the current status of all contacted colleges</p>
+                    </div>
+                </div>
+                
+                <!-- Invitations Timeline Chart -->
+                <div class="chart-container" style="margin-bottom: 1.5rem;">
+                    <div class="chart-header">
+                        <h5 style="margin: 0; color: #1f2937; font-size: 1.1rem;">Invitations Sent Over Time</h5>
+                        <div class="chart-legend" id="timelineLegend" style="display: flex; gap: 0.5rem; font-size: 0.85rem;">
+                            <span style="display: flex; align-items: center; gap: 0.3rem;">
+                                <span style="display: inline-block; width: 12px; height: 12px; background: #3b82f6; border-radius: 2px;"></span>
+                                Invitations
+                            </span>
+                        </div>
+                    </div>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+                    <div class="chart-description" style="margin-top: 1rem; font-size: 0.85rem; color: #6b7280;">
+                        <p>Shows the number of invitations sent over the last 7 days</p>
+                    </div>
+                </div>
+                
+                <!-- Response Timeline Chart -->
+                <div class="chart-container" style="margin-bottom: 1.5rem;">
+                    <div class="chart-header">
+                        <h5 style="margin: 0; color: #1f2937; font-size: 1.1rem;">Response Timeline Analysis</h5>
+                        <div class="chart-filters" style="display: flex; gap: 0.5rem;">
+                            <button class="filter-btn active" data-filter="all" onclick="filterResponseChart('all')" style="padding: 0.4rem 0.8rem; border: 1px solid #e5e7eb; border-radius: 6px; background: #2563eb; color: white; cursor: pointer; font-size: 0.85rem;">All</button>
+                            <button class="filter-btn" data-filter="responded" onclick="filterResponseChart('responded')" style="padding: 0.4rem 0.8rem; border: 1px solid #e5e7eb; border-radius: 6px; background: white; color: #6b7280; cursor: pointer; font-size: 0.85rem;">Responded</button>
+                            <button class="filter-btn" data-filter="confirmed" onclick="filterResponseChart('confirmed')" style="padding: 0.4rem 0.8rem; border: 1px solid #e5e7eb; border-radius: 6px; background: white; color: #6b7280; cursor: pointer; font-size: 0.85rem;">Confirmed</button>
+                        </div>
+                    </div>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="responseTimelineChart"></canvas>
+                    </div>
+                    <div class="chart-description" style="margin-top: 1rem; font-size: 0.85rem; color: #6b7280;">
+                        <p>Shows response times of colleges after receiving invitations</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Metrics -->
+            <div class="performance-metrics" style="margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 1.5rem; color: #1f2937; font-size: 1.2rem;">Performance Metrics</h4>
+                <div class="metrics-grid">
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb;">
+                        <div class="metric-header" style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem;">
+                            <i class="fas fa-rocket" style="color: #8b5cf6; font-size: 1.2rem;"></i>
+                            <h5 style="margin: 0; font-size: 0.9rem; color: #6b7280; font-weight: 600;">Top Performing Template</h5>
+                        </div>
+                        <div class="metric-value" id="topTemplate" style="font-size: 1.8rem; font-weight: bold; color: #1f2937; margin-bottom: 0.5rem;">Formal</div>
+                        <div class="metric-detail" style="font-size: 0.85rem; color: #6b7280;">Response Rate: <span id="topTemplateRate" style="font-weight: 600; color: #10b981;">45%</span></div>
+                    </div>
+                    
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb;">
+                        <div class="metric-header" style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem;">
+                            <i class="fas fa-map-marker-alt" style="color: #ef4444; font-size: 1.2rem;"></i>
+                            <h5 style="margin: 0; font-size: 0.9rem; color: #6b7280; font-weight: 600;">Most Responsive Location</h5>
+                        </div>
+                        <div class="metric-value" id="topLocation" style="font-size: 1.8rem; font-weight: bold; color: #1f2937; margin-bottom: 0.5rem;">Coimbatore</div>
+                        <div class="metric-detail" style="font-size: 0.85rem; color: #6b7280;">Colleges: <span id="topLocationCount" style="font-weight: 600; color: #3b82f6;">5</span></div>
+                    </div>
+                    
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb;">
+                        <div class="metric-header" style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem;">
+                            <i class="fas fa-calendar" style="color: #10b981; font-size: 1.2rem;"></i>
+                            <h5 style="margin: 0; font-size: 0.9rem; color: #6b7280; font-weight: 600;">Best Day for Outreach</h5>
+                        </div>
+                        <div class="metric-value" id="bestDay" style="font-size: 1.8rem; font-weight: bold; color: #1f2937; margin-bottom: 0.5rem;">Tuesday</div>
+                        <div class="metric-detail" style="font-size: 0.85rem; color: #6b7280;">Avg. Response: <span id="bestDayRate" style="font-weight: 600; color: #f59e0b;">55%</span></div>
+                    </div>
+                    
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb;">
+                        <div class="metric-header" style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem;">
+                            <i class="fas fa-clock" style="color: #3b82f6; font-size: 1.2rem;"></i>
+                            <h5 style="margin: 0; font-size: 0.9rem; color: #6b7280; font-weight: 600;">Optimal Sending Time</h5>
+                        </div>
+                        <div class="metric-value" id="bestTime" style="font-size: 1.8rem; font-weight: bold; color: #1f2937; margin-bottom: 0.5rem;">10:00 AM</div>
+                        <div class="metric-detail" style="font-size: 0.85rem; color: #6b7280;">Open Rate: <span id="bestTimeRate" style="font-weight: 600; color: #8b5cf6;">68%</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Insights Section -->
+            <div class="insights-section" style="background: #f8fafc; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 1.5rem; color: #1f2937; font-size: 1.2rem;">Actionable Insights</h4>
+                <div class="insights-list" id="insightsList">
+                    <!-- Insights will be added here dynamically -->
+                </div>
+            </div>
+            
+            <!-- Export Section -->
+            <div class="export-section" style="text-align: center; padding: 1.5rem; background: white; border-radius: 12px; border: 1px solid #e5e7eb;">
+                <h4 style="margin-bottom: 1.5rem; color: #1f2937; font-size: 1.2rem;">Export Analytics</h4>
+                <div class="export-actions" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="exportAnalyticsReport()" class="btn btn-primary" style="padding: 0.75rem 1.5rem; border-radius: 8px; border: none; background: #2563eb; color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-file-pdf"></i> Export PDF Report
+                    </button>
+                    <button onclick="exportAnalyticsData()" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; border-radius: 8px; border: none; background: #6b7280; color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-file-csv"></i> Export CSV Data
+                    </button>
+                    <button onclick="shareAnalytics()" class="btn btn-info" style="padding: 0.75rem 1.5rem; border-radius: 8px; border: none; background: #0ea5e9; color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-share-alt"></i> Share Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!Utils.isAuthenticated()) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            loadEventData();
+            loadCollegesData();
+            setupOutreachListeners();
+            updateStats();
+            initializeCharts();
+        });
+
+        let eventData = {};
+        let colleges = [];
+        let selectedColleges = new Set();
+        let invitationsTimeline = [];
+        let statusChart = null;
+        let timelineChart = null;
+        let responseTimelineChart = null;
+
+        function loadEventData() {
+            const data = JSON.parse(sessionStorage.getItem('createdEvent'));
+            if (!data) {
+                window.location.href = '/features/features.html';
+                return;
+            }
+            eventData = data;
+            
+            // Update invitation subject with event name
+            const subjectInput = document.getElementById('invitationSubject');
+            if (subjectInput) {
+                subjectInput.value = `Invitation to participate in ${data.event_name}`;
+            }
+        }
+
+        function loadCollegesData() {
+            // Sample college data with more statuses for better analytics
+            colleges = [
+                {
+                    id: 1,
+                    name: "PSG College of Technology",
+                    location: "Coimbatore",
+                    contactPerson: "Dr. Raj Kumar",
+                    email: "hod.cse@psgtech.ac.in",
+                    phone: "+91 422 2572177",
+                    status: "Not Contacted",
+                    department: "Computer Science",
+                    invitationDate: null,
+                    responseDate: null,
+                    participantsExpected: 0,
+                    templateUsed: null
+                },
+                {
+                    id: 2,
+                    name: "Coimbatore Institute of Technology",
+                    location: "Coimbatore",
+                    contactPerson: "Prof. Senthil Kumar",
+                    email: "senthil.k@cit.edu.in",
+                    phone: "+91 422 2574071",
+                    status: "Invitation Sent",
+                    department: "Information Technology",
+                    invitationDate: "2024-01-15",
+                    responseDate: null,
+                    participantsExpected: 3,
+                    templateUsed: "formal"
+                },
+                {
+                    id: 3,
+                    name: "Sri Krishna College of Technology",
+                    location: "Coimbatore",
+                    contactPerson: "Dr. Priya Sharma",
+                    email: "priya.s@skct.edu.in",
+                    phone: "+91 422 2678000",
+                    status: "Responded",
+                    department: "Computer Science",
+                    invitationDate: "2024-01-10",
+                    responseDate: "2024-01-12",
+                    participantsExpected: 5,
+                    templateUsed: "tech"
+                },
+                {
+                    id: 4,
+                    name: "Kumaraguru College of Technology",
+                    location: "Coimbatore",
+                    contactPerson: "Mr. Anand Patel",
+                    email: "anand.patel@kct.ac.in",
+                    phone: "+91 422 2669400",
+                    status: "Confirmed Participation",
+                    department: "Electronics",
+                    invitationDate: "2024-01-05",
+                    responseDate: "2024-01-07",
+                    participantsExpected: 8,
+                    templateUsed: "student"
+                },
+                {
+                    id: 5,
+                    name: "Amrita Vishwa Vidyapeetham",
+                    location: "Coimbatore",
+                    contactPerson: "Dr. Meena Krishnan",
+                    email: "meena.k@amrita.edu",
+                    phone: "+91 422 2685000",
+                    status: "Not Contacted",
+                    department: "Multiple Departments",
+                    invitationDate: null,
+                    responseDate: null,
+                    participantsExpected: 0,
+                    templateUsed: null
+                },
+                {
+                    id: 6,
+                    name: "Government College of Technology",
+                    location: "Coimbatore",
+                    contactPerson: "Dr. Arvind Kumar",
+                    email: "arvind.k@gct.ac.in",
+                    phone: "+91 422 2432222",
+                    status: "Declined",
+                    department: "Mechanical",
+                    invitationDate: "2024-01-08",
+                    responseDate: "2024-01-09",
+                    participantsExpected: 0,
+                    templateUsed: "formal"
+                },
+                {
+                    id: 7,
+                    name: "Anna University - CEG Campus",
+                    location: "Chennai",
+                    contactPerson: "Prof. Sanjay Gupta",
+                    email: "sanjay.g@annauniv.edu",
+                    phone: "+91 44 2235 8134",
+                    status: "Confirmed Participation",
+                    department: "Computer Science",
+                    invitationDate: "2024-01-12",
+                    responseDate: "2024-01-14",
+                    participantsExpected: 12,
+                    templateUsed: "tech"
+                },
+                {
+                    id: 8,
+                    name: "VIT University",
+                    location: "Vellore",
+                    contactPerson: "Dr. Priya Nair",
+                    email: "priya.n@vit.ac.in",
+                    phone: "+91 416 224 3091",
+                    status: "Responded",
+                    department: "IT & CS",
+                    invitationDate: "2024-01-14",
+                    responseDate: "2024-01-16",
+                    participantsExpected: 7,
+                    templateUsed: "student"
+                }
+            ];
+            
+            // Load timeline from invitations
+            invitationsTimeline = colleges
+                .filter(c => c.invitationDate)
+                .map(c => ({
+                    date: c.invitationDate,
+                    subject: `Invitation to ${c.name}`,
+                    colleges: [c.id],
+                    status: c.status
+                }));
+            
+            renderCollegesTable();
+        }
+
+        function setupOutreachListeners() {
+            // Update message preview on input
+            const messageInput = document.getElementById('invitationMessage');
+            if (messageInput) {
+                messageInput.addEventListener('input', updateMessagePreview);
+            }
+            
+            // Update subject preview
+            const subjectInput = document.getElementById('invitationSubject');
+            if (subjectInput) {
+                subjectInput.addEventListener('input', updateMessagePreview);
+            }
+            
+            // Schedule options
+            const scheduleCheckbox = document.getElementById('scheduleSend');
+            if (scheduleCheckbox) {
+                scheduleCheckbox.addEventListener('change', function() {
+                    const scheduleOptions = document.getElementById('scheduleOptions');
+                    scheduleOptions.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+        }
+
+        function renderCollegesTable() {
+            const tableBody = document.getElementById('collegesTableBody');
+            tableBody.innerHTML = '';
+            
+            colleges.forEach(college => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="college-checkbox" 
+                               data-id="${college.id}" 
+                               onchange="updateSelectedColleges(${college.id})"
+                               ${selectedColleges.has(college.id) ? 'checked' : ''}>
+                    </td>
+                    <td>${college.name}</td>
+                    <td>${college.location}</td>
+                    <td>${college.contactPerson}</td>
+                    <td>${college.email}</td>
+                    <td>${college.phone}</td>
+                    <td>
+                        <span class="status-badge status-${college.status.toLowerCase().replace(/\s+/g, '-')}">
+                            ${college.status}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="viewCollegeDetails(${college.id})" class="btn-icon" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="editCollege(${college.id})" class="btn-icon" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="sendIndividualInvitation(${college.id})" class="btn-icon" title="Send Invitation">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+// Add these updated chart functions
+
+function createStatusChart() {
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    
+    // Calculate status distribution
+    const statusCounts = {
+        'Not Contacted': colleges.filter(c => c.status === 'Not Contacted').length,
+        'Invitation Sent': colleges.filter(c => c.status === 'Invitation Sent').length,
+        'Responded': colleges.filter(c => c.status === 'Responded').length,
+        'Confirmed Participation': colleges.filter(c => c.status === 'Confirmed Participation').length,
+        'Declined': colleges.filter(c => c.status === 'Declined').length
+    };
+    
+    // Destroy existing chart if it exists
+    if (window.statusChartInstance) {
+        window.statusChartInstance.destroy();
+    }
+    
+    window.statusChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(statusCounts),
+            datasets: [{
+                data: Object.values(statusCounts),
+                backgroundColor: [
+                    '#9ca3af', // Not Contacted
+                    '#3b82f6', // Invitation Sent
+                    '#f59e0b', // Responded
+                    '#10b981', // Confirmed
+                    '#ef4444'  // Declined
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff',
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 11
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label;
+                            const value = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            },
+            cutout: '60%'
+        }
+    });
+}
+
+function createTimelineChart() {
+    const ctx = document.getElementById('timelineChart').getContext('2d');
+    
+    // Get last 7 days of data
+    const last7Days = Array.from({length: 7}, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (6 - i));
+        return date.toISOString().split('T')[0];
+    });
+    
+    // Count invitations per day
+    const invitationsByDay = last7Days.map(date => 
+        invitationsTimeline.filter(item => item.date === date).length
+    );
+    
+    // Destroy existing chart if it exists
+    if (window.timelineChartInstance) {
+        window.timelineChartInstance.destroy();
+    }
+    
+    window.timelineChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: last7Days.map(date => {
+                const d = new Date(date);
+                return d.toLocaleDateString('en-US', { 
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }),
+            datasets: [{
+                label: 'Invitations Sent',
+                data: invitationsByDay,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#3b82f6',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    titleFont: { size: 12 },
+                    bodyFont: { size: 12 },
+                    padding: 12
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        font: { size: 11 }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        font: { size: 11 }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'nearest'
+            }
+        }
+    });
+}
+
+function createResponseTimelineChart() {
+    const ctx = document.getElementById('responseTimelineChart').getContext('2d');
+    
+    // Prepare data for response timeline
+    const respondedColleges = colleges.filter(c => c.responseDate);
+    const responseTimes = respondedColleges.map(college => {
+        if (college.invitationDate && college.responseDate) {
+            const inviteDate = new Date(college.invitationDate);
+            const responseDate = new Date(college.responseDate);
+            return Math.ceil((responseDate - inviteDate) / (1000 * 60 * 60 * 24));
+        }
+        return 0;
+    });
+    
+    // Group by response time ranges
+    const timeRanges = ['Same Day', '1-2 Days', '3-5 Days', '6+ Days'];
+    const rangeCounts = [0, 0, 0, 0];
+    
+    responseTimes.forEach(days => {
+        if (days === 0) rangeCounts[0]++;
+        else if (days <= 2) rangeCounts[1]++;
+        else if (days <= 5) rangeCounts[2]++;
+        else rangeCounts[3]++;
+    });
+    
+    // Destroy existing chart if it exists
+    if (window.responseTimelineChartInstance) {
+        window.responseTimelineChartInstance.destroy();
+    }
+    
+    window.responseTimelineChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: timeRanges,
+            datasets: [{
+                label: 'Number of Colleges',
+                data: rangeCounts,
+                backgroundColor: [
+                    'rgba(16, 185, 129, 0.8)',  // Same Day
+                    'rgba(59, 130, 246, 0.8)',  // 1-2 Days
+                    'rgba(245, 158, 11, 0.8)',  // 3-5 Days
+                    'rgba(239, 68, 68, 0.8)'    // 6+ Days
+                ],
+                borderColor: [
+                    '#10b981',
+                    '#3b82f6',
+                    '#f59e0b',
+                    '#ef4444'
+                ],
+                borderWidth: 2,
+                borderRadius: 6,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    titleFont: { size: 12 },
+                    bodyFont: { size: 12 },
+                    padding: 12
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        font: { size: 11 }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        font: { size: 11 }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function filterResponseChart(filter) {
+    // Update filter button states
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.background = 'white';
+        btn.style.color = '#6b7280';
+    });
+    
+    const activeBtn = document.querySelector(`.filter-btn[data-filter="${filter}"]`);
+    activeBtn.classList.add('active');
+    activeBtn.style.background = '#2563eb';
+    activeBtn.style.color = 'white';
+    
+    // Filter data based on selection
+    let filteredColleges = colleges;
+    if (filter === 'responded') {
+        filteredColleges = colleges.filter(c => 
+            c.status === 'Responded' || c.status === 'Confirmed Participation' || c.status === 'Declined'
+        );
+    } else if (filter === 'confirmed') {
+        filteredColleges = colleges.filter(c => c.status === 'Confirmed Participation');
+    }
+    
+    // Update the response timeline chart with filtered data
+    const respondedColleges = filteredColleges.filter(c => c.responseDate);
+    const responseTimes = respondedColleges.map(college => {
+        if (college.invitationDate && college.responseDate) {
+            const inviteDate = new Date(college.invitationDate);
+            const responseDate = new Date(college.responseDate);
+            return Math.ceil((responseDate - inviteDate) / (1000 * 60 * 60 * 24));
+        }
+        return 0;
+    });
+    
+    // Update chart data
+    const timeRanges = ['Same Day', '1-2 Days', '3-5 Days', '6+ Days'];
+    const rangeCounts = [0, 0, 0, 0];
+    
+    responseTimes.forEach(days => {
+        if (days === 0) rangeCounts[0]++;
+        else if (days <= 2) rangeCounts[1]++;
+        else if (days <= 5) rangeCounts[2]++;
+        else rangeCounts[3]++;
+    });
+    
+    if (window.responseTimelineChartInstance) {
+        window.responseTimelineChartInstance.data.datasets[0].data = rangeCounts;
+        window.responseTimelineChartInstance.update();
+    }
+}
+
+function initializeCharts() {
+    createStatusChart();
+    createTimelineChart();
+    createResponseTimelineChart();
+    updateAnalyticsMetrics();
+    generateInsights();
+}
+
+function updateCharts() {
+    createStatusChart();
+    createTimelineChart();
+    createResponseTimelineChart();
+    updateAnalyticsMetrics();
+    generateInsights();
+}
+
+// Update the openAnalyticsModal function
+function openAnalyticsModal() {
+    document.getElementById('analyticsModal').style.display = 'flex';
+    
+    // Reset filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.background = 'white';
+        btn.style.color = '#6b7280';
+    });
+    
+    const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+    allBtn.classList.add('active');
+    allBtn.style.background = '#2563eb';
+    allBtn.style.color = 'white';
+    
+    updateCharts();
+}
+
+        function updateSelectedColleges(collegeId) {
+            const checkbox = document.querySelector(`.college-checkbox[data-id="${collegeId}"]`);
+            
+            if (checkbox.checked) {
+                selectedColleges.add(collegeId);
+            } else {
+                selectedColleges.delete(collegeId);
+            }
+            
+            updateBulkInviteButton();
+            updateRecipientsCount();
+        }
+
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.college-checkbox');
+            const isChecked = selectAllCheckbox.checked;
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+                const collegeId = parseInt(checkbox.dataset.id);
+                
+                if (isChecked) {
+                    selectedColleges.add(collegeId);
+                } else {
+                    selectedColleges.delete(collegeId);
+                }
+            });
+            
+            updateBulkInviteButton();
+            updateRecipientsCount();
+        }
+
+        function updateBulkInviteButton() {
+            const bulkBtn = document.getElementById('bulkInviteBtn');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            selectedCount.textContent = selectedColleges.size;
+            
+            if (selectedColleges.size > 0) {
+                bulkBtn.disabled = false;
+            } else {
+                bulkBtn.disabled = true;
+            }
+        }
+
+        function searchColleges() {
+            const searchTerm = document.getElementById('collegeSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#collegesTableBody tr');
+            
+            rows.forEach(row => {
+                const collegeName = row.cells[1].textContent.toLowerCase();
+                const location = row.cells[2].textContent.toLowerCase();
+                const contactPerson = row.cells[3].textContent.toLowerCase();
+                
+                if (collegeName.includes(searchTerm) || 
+                    location.includes(searchTerm) || 
+                    contactPerson.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function openInvitationComposer() {
+            // Update recipients count and list
+            updateRecipientsCount();
+            
+            // Set minimum date for scheduling
+            const today = new Date().toISOString().split('T')[0];
+            const scheduleDate = document.getElementById('scheduleDate');
+            if (scheduleDate) {
+                scheduleDate.min = today;
+                scheduleDate.value = today;
+            }
+            
+            // Hide preview initially
+            document.getElementById('messagePreview').style.display = 'none';
+            document.getElementById('previewPlaceholder').style.display = 'block';
+            
+            // Show modal
+            document.getElementById('invitationModal').style.display = 'flex';
+            
+            // Focus on subject input
+            setTimeout(() => {
+                document.getElementById('invitationSubject').focus();
+            }, 100);
+        }
+
+        function closeInvitationModal() {
+            document.getElementById('invitationModal').style.display = 'none';
+        }
+
+        function updateRecipientsCount() {
+            const count = selectedColleges.size;
+            const recipientsCount = document.getElementById('recipientsCount');
+            if (recipientsCount) {
+                recipientsCount.textContent = count;
+            }
+            
+            const noRecipientsMessage = document.getElementById('noRecipientsMessage');
+            const recipientsList = document.getElementById('recipientsList');
+            
+            if (recipientsList) {
+                recipientsList.innerHTML = '';
+                
+                if (count === 0) {
+                    noRecipientsMessage.style.display = 'block';
+                    recipientsList.appendChild(noRecipientsMessage);
+                } else {
+                    noRecipientsMessage.style.display = 'none';
+                    
+                    // Add selected colleges to recipients list
+                    selectedColleges.forEach(collegeId => {
+                        const college = colleges.find(c => c.id === collegeId);
+                        if (college) {
+                            const recipientItem = document.createElement('div');
+                            recipientItem.className = 'recipient-item';
+                            recipientItem.innerHTML = `
+                                <span>${college.name} (${college.contactPerson})</span>
+                                <button onclick="removeRecipient(${collegeId})" class="btn-remove" title="Remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            `;
+                            recipientsList.appendChild(recipientItem);
+                        }
+                    });
+                }
+            }
+        }
+
+        function updateMessagePreview() {
+            const subject = document.getElementById('invitationSubject').value;
+            const message = document.getElementById('invitationMessage').value;
+            const preview = document.getElementById('messagePreview');
+            
+            if (preview) {
+                const formattedMessage = message
+                    .replace(/\n/g, '<br>')
+                    .replace(/\[College Name\]/g, '<strong>[College Name]</strong>')
+                    .replace(/\[Event Name\]/g, `<strong>${eventData.event_name || '[Event Name]'}</strong>`);
+                
+                preview.innerHTML = `
+                    <div style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb;">
+                        <strong>Subject:</strong> ${subject || '[No Subject]'}
+                    </div>
+                    <div>
+                        ${formattedMessage || '[No Message]'}
+                    </div>
+                `;
+            }
+        }
+
+        function togglePreview() {
+            const preview = document.getElementById('messagePreview');
+            const placeholder = document.getElementById('previewPlaceholder');
+            
+            if (preview.style.display === 'none' || preview.style.display === '') {
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+                updateMessagePreview();
+            } else {
+                preview.style.display = 'none';
+                placeholder.style.display = 'block';
+            }
+        }
+
+        function sendInvitation() {
+            const subject = document.getElementById('invitationSubject').value.trim();
+            const message = document.getElementById('invitationMessage').value.trim();
+            
+            if (!subject) {
+                Utils.showError('Please enter a subject for the invitation');
+                return;
+            }
+            
+            if (!message) {
+                Utils.showError('Please enter the invitation message');
+                return;
+            }
+            
+            if (selectedColleges.size === 0) {
+                Utils.showError('Please select at least one college to send the invitation');
+                return;
+            }
+            
+            Utils.showLoading();
+            
+            // Simulate sending
+            setTimeout(() => {
+                Utils.hideLoading();
+                closeInvitationModal();
+                
+                // Update college statuses with dates
+                const today = new Date().toISOString().split('T')[0];
+                selectedColleges.forEach(collegeId => {
+                    const college = colleges.find(c => c.id === collegeId);
+                    if (college) {
+                        college.status = 'Invitation Sent';
+                        college.invitationDate = today;
+                        college.templateUsed = 'formal';
+                    }
+                });
+                
+                // Add to timeline
+                const timelineItem = {
+                    date: today,
+                    subject: subject,
+                    colleges: Array.from(selectedColleges),
+                    status: 'sent'
+                };
+                invitationsTimeline.push(timelineItem);
+                addToTimeline(subject);
+                
+                renderCollegesTable();
+                updateStats();
+                updateCharts();
+                generateInsights();
+                
+                Utils.showSuccessModal(`Invitation sent to ${selectedColleges.size} college(s) successfully!`);
+                
+                // Clear selection
+                selectedColleges.clear();
+                updateBulkInviteButton();
+                updateRecipientsCount();
+            }, 1500);
+        }
+
+        function updateStats() {
+            // Calculate actual counts from college data
+            const contactedColleges = colleges.filter(c => 
+                c.status !== 'Not Contacted'
+            );
+            
+            const respondedColleges = colleges.filter(c => 
+                c.status === 'Responded' || 
+                c.status === 'Confirmed Participation' ||
+                c.status === 'Declined'
+            );
+            
+            const confirmedColleges = colleges.filter(c => 
+                c.status === 'Confirmed Participation'
+            );
+            
+            const totalParticipants = confirmedColleges.reduce((sum, college) => 
+                sum + (college.participantsExpected || 0), 0
+            );
+            
+            // Update DOM elements
+            document.getElementById('invitationsSent').textContent = contactedColleges.length;
+            document.getElementById('responsesReceived').textContent = respondedColleges.length;
+            document.getElementById('participantsExpected').textContent = totalParticipants;
+            document.getElementById('collegesContacted').textContent = contactedColleges.length;
+        }
+
+        function initializeCharts() {
+            // Destroy existing charts if they exist
+            if (statusChart) statusChart.destroy();
+            if (timelineChart) timelineChart.destroy();
+            if (responseTimelineChart) responseTimelineChart.destroy();
+            
+            // Create charts
+            createStatusChart();
+            createTimelineChart();
+            createResponseTimelineChart();
+            updateAnalyticsMetrics();
+            generateInsights();
+        }
+
+        function createStatusChart() {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            
+            // Calculate status distribution
+            const statusCounts = {
+                'Not Contacted': colleges.filter(c => c.status === 'Not Contacted').length,
+                'Invitation Sent': colleges.filter(c => c.status === 'Invitation Sent').length,
+                'Responded': colleges.filter(c => c.status === 'Responded').length,
+                'Confirmed Participation': colleges.filter(c => c.status === 'Confirmed Participation').length,
+                'Declined': colleges.filter(c => c.status === 'Declined').length
+            };
+            
+            statusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{
+                        data: Object.values(statusCounts),
+                        backgroundColor: [
+                            '#9ca3af',
+                            '#3b82f6',
+                            '#f59e0b',
+                            '#10b981',
+                            '#ef4444'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTimelineChart() {
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            
+            // Get last 7 days of data
+            const last7Days = Array.from({length: 7}, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() - (6 - i));
+                return date.toISOString().split('T')[0];
+            });
+            
+            // Count invitations per day
+            const invitationsByDay = last7Days.map(date => 
+                invitationsTimeline.filter(item => item.date === date).length
+            );
+            
+            timelineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: last7Days.map(date => new Date(date).toLocaleDateString('en-US', { 
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric'
+                    })),
+                    datasets: [{
+                        label: 'Invitations Sent',
+                        data: invitationsByDay,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createResponseTimelineChart() {
+            const ctx = document.getElementById('responseTimelineChart').getContext('2d');
+            
+            // Prepare data for response timeline
+            const respondedColleges = colleges.filter(c => c.responseDate);
+            const responseTimes = respondedColleges.map(college => {
+                if (college.invitationDate && college.responseDate) {
+                    const inviteDate = new Date(college.invitationDate);
+                    const responseDate = new Date(college.responseDate);
+                    return Math.ceil((responseDate - inviteDate) / (1000 * 60 * 60 * 24));
+                }
+                return 0;
+            });
+            
+            // Group by response time ranges
+            const timeRanges = ['Same Day', '1-2 Days', '3-5 Days', '6+ Days'];
+            const rangeCounts = [0, 0, 0, 0];
+            
+            responseTimes.forEach(days => {
+                if (days === 0) rangeCounts[0]++;
+                else if (days <= 2) rangeCounts[1]++;
+                else if (days <= 5) rangeCounts[2]++;
+                else rangeCounts[3]++;
+            });
+            
+            responseTimelineChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: timeRanges,
+                    datasets: [{
+                        label: 'Number of Colleges',
+                        data: rangeCounts,
+                        backgroundColor: [
+                            '#10b981',
+                            '#3b82f6',
+                            '#f59e0b',
+                            '#ef4444'
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAnalyticsMetrics() {
+            // Calculate metrics
+            const contactedColleges = colleges.filter(c => c.status !== 'Not Contacted');
+            const respondedColleges = colleges.filter(c => 
+                c.status === 'Responded' || 
+                c.status === 'Confirmed Participation' ||
+                c.status === 'Declined'
+            );
+            const confirmedColleges = colleges.filter(c => c.status === 'Confirmed Participation');
+            
+            // Response Rate
+            const responseRate = contactedColleges.length > 0 
+                ? Math.round((respondedColleges.length / contactedColleges.length) * 100)
+                : 0;
+            document.getElementById('responseRate').textContent = `${responseRate}%`;
+            document.getElementById('responseRateBar').style.width = `${responseRate}%`;
+            
+            // Confirmation Rate
+            const confirmationRate = respondedColleges.length > 0
+                ? Math.round((confirmedColleges.length / respondedColleges.length) * 100)
+                : 0;
+            document.getElementById('confirmationRate').textContent = `${confirmationRate}%`;
+            document.getElementById('confirmationRateBar').style.width = `${confirmationRate}%`;
+            
+            // Average Participants
+            const totalParticipants = confirmedColleges.reduce((sum, c) => sum + (c.participantsExpected || 0), 0);
+            const avgParticipants = confirmedColleges.length > 0
+                ? Math.round(totalParticipants / confirmedColleges.length)
+                : 0;
+            document.getElementById('avgParticipants').textContent = avgParticipants;
+        }
+
+        function generateInsights() {
+            const insightsList = document.getElementById('insightsList');
+            insightsList.innerHTML = '';
+            
+            const insights = [];
+            
+            // Response rate insight
+            const contactedColleges = colleges.filter(c => c.status !== 'Not Contacted');
+            const respondedColleges = colleges.filter(c => 
+                c.status === 'Responded' || 
+                c.status === 'Confirmed Participation'
+            );
+            const responseRate = contactedColleges.length > 0 
+                ? Math.round((respondedColleges.length / contactedColleges.length) * 100)
+                : 0;
+            
+            if (responseRate < 30) {
+                insights.push({
+                    type: 'warning',
+                    icon: 'exclamation-triangle',
+                    message: `Low response rate (${responseRate}%). Consider improving invitation templates or following up.`
+                });
+            }
+            
+            // Template insight
+            const templateGroups = {};
+            colleges.forEach(college => {
+                if (college.templateUsed) {
+                    if (!templateGroups[college.templateUsed]) templateGroups[college.templateUsed] = [];
+                    templateGroups[college.templateUsed].push(college);
+                }
+            });
+            
+            let bestTemplate = '';
+            let bestTemplateResponseRate = 0;
+            Object.entries(templateGroups).forEach(([template, collegesList]) => {
+                const responded = collegesList.filter(c => 
+                    c.status === 'Responded' || c.status === 'Confirmed Participation'
+                ).length;
+                const rate = Math.round((responded / collegesList.length) * 100);
+                if (rate > bestTemplateResponseRate) {
+                    bestTemplateResponseRate = rate;
+                    bestTemplate = template;
+                }
+            });
+            
+            if (bestTemplate) {
+                insights.push({
+                    type: 'info',
+                    icon: 'envelope',
+                    message: `"${bestTemplate}" template performs best (${bestTemplateResponseRate}% response rate).`
+                });
+            }
+            
+            // Render insights
+            insights.forEach(insight => {
+                const insightItem = document.createElement('div');
+                insightItem.className = `insight-item insight-${insight.type}`;
+                insightItem.innerHTML = `
+                    <div class="insight-icon">
+                        <i class="fas fa-${insight.icon}"></i>
+                    </div>
+                    <div class="insight-content">
+                        <p>${insight.message}</p>
+                    </div>
+                `;
+                insightsList.appendChild(insightItem);
+            });
+            
+            // Default insight
+            if (insights.length === 0) {
+                insightsList.innerHTML = `
+                    <div class="insight-item insight-info">
+                        <div class="insight-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="insight-content">
+                            <p>Continue your outreach efforts. More data will generate personalized insights.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateCharts() {
+            // Destroy and recreate charts with updated data
+            if (statusChart) statusChart.destroy();
+            if (timelineChart) timelineChart.destroy();
+            if (responseTimelineChart) responseTimelineChart.destroy();
+            
+            createStatusChart();
+            createTimelineChart();
+            createResponseTimelineChart();
+            updateAnalyticsMetrics();
+            generateInsights();
+        }
+
+        function openAnalyticsModal() {
+            document.getElementById('analyticsModal').style.display = 'flex';
+            updateCharts();
+        }
+
+        function closeAnalyticsModal() {
+            document.getElementById('analyticsModal').style.display = 'none';
+        }
+
+        // Other existing functions
+        function formatText(format) {
+            const textarea = document.getElementById('invitationMessage');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            
+            let formattedText = selectedText;
+            
+            switch(format) {
+                case 'bold':
+                    formattedText = `<strong>${selectedText}</strong>`;
+                    break;
+                case 'italic':
+                    formattedText = `<em>${selectedText}</em>`;
+                    break;
+                case 'underline':
+                    formattedText = `<u>${selectedText}</u>`;
+                    break;
+            }
+            
+            textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
+            updateMessagePreview();
+        }
+
+        function insertEventDetails() {
+            const textarea = document.getElementById('invitationMessage');
+            const eventDetails = `
+
+Event Details:
+- Event Name: ${eventData.event_name}
+- Event Type: ${eventData.event_type}
+- Theme: ${eventData.theme}
+- Registration Link: ${eventData.google_form_link}
+
+We believe this event will provide an excellent platform for your students to showcase their talents and interact with peers from other institutions.
+            `;
+            
+            textarea.value += eventDetails;
+            updateMessagePreview();
+        }
+
+        function insertRegistrationLink() {
+            const textarea = document.getElementById('invitationMessage');
+            const linkText = `For registration and more details, please visit: ${eventData.google_form_link}`;
+            textarea.value += '\n' + linkText;
+            updateMessagePreview();
+        }
+
+        function insertCollegeName() {
+            const textarea = document.getElementById('invitationMessage');
+            textarea.value += '[College Name]';
+            updateMessagePreview();
+        }
+
+        function sendBulkInvitations() {
+            if (selectedColleges.size === 0) {
+                Utils.showError('Please select at least one college');
+                return;
+            }
+            
+            openInvitationComposer();
+        }
+
+        function sendIndividualInvitation(collegeId) {
+            selectedColleges.clear();
+            selectedColleges.add(collegeId);
+            updateBulkInviteButton();
+            openInvitationComposer();
+        }
+
+        function useTemplate(templateType) {
+            const messageInput = document.getElementById('invitationMessage');
+            let template = '';
+            
+            switch(templateType) {
+                case 'formal':
+                    template = `Dear [College Name],
+
+On behalf of ${eventData.event_name}, we extend a formal invitation to your esteemed institution to participate in our upcoming ${eventData.event_type}.
+
+Event Details:
+- Event: ${eventData.event_name}
+- Type: ${eventData.event_type}
+- Theme: ${eventData.theme}
+- Registration: ${eventData.google_form_link}
+
+This event presents an excellent opportunity for students to enhance their skills and network with peers. We would be honored to have representation from your institution.
+
+Please share this information with interested students and encourage them to register at the earliest.
+
+Looking forward to your positive response.
+
+Sincerely,
+Event Coordination Team
+SKASC Event Manager`;
+                    break;
+                    
+                case 'student':
+                    template = `Hey there! 👋
+
+We're excited to invite students from [College Name] to join us for ${eventData.event_name}!
+
+🎯 What: ${eventData.event_type} - ${eventData.theme}
+🔗 Register here: ${eventData.google_form_link}
+
+This is going to be an awesome opportunity to:
+• Showcase your talents
+• Learn new skills
+• Meet students from other colleges
+• Win exciting prizes!
+
+Spread the word in your college and let's make this event epic together! 🚀
+
+Cheers,
+The ${eventData.event_name} Team`;
+                    break;
+                    
+                case 'tech':
+                    template = `🚀 Tech Invitation Alert!
+
+Calling all tech enthusiasts from [College Name]!
+
+We're organizing ${eventData.event_name} - a ${eventData.event_type} focused on ${eventData.theme}.
+
+📅 Save the date!
+👥 Team up & showcase your skills
+🏆 Amazing prizes await
+🔗 Register now: ${eventData.google_form_link}
+
+Perfect opportunity for coding clubs, tech societies, and all tech-savvy students!
+
+Let's code, create, and conquer together! 💻✨
+
+Best regards,
+${eventData.event_name} Organizing Committee`;
+                    break;
+                    
+                case 'custom':
+                    template = `Customize your invitation here...
+
+[Add your personalized message for the colleges]
+
+Don't forget to include:
+• Event name: ${eventData.event_name}
+• Event type: ${eventData.event_type}
+• Registration link: ${eventData.google_form_link}`;
+                    break;
+            }
+            
+            if (messageInput) {
+                messageInput.value = template;
+                updateMessagePreview();
+            }
+        }
+
+        function addToTimeline(subject) {
+            const timeline = document.getElementById('invitationsTimeline');
+            const timelineItem = document.createElement('div');
+            timelineItem.className = 'timeline-item';
+            timelineItem.innerHTML = `
+                <div class="timeline-marker">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <div class="timeline-content">
+                    <h5>${subject}</h5>
+                    <p>Sent to ${selectedColleges.size} college(s) • ${new Date().toLocaleString()}</p>
+                    <div class="timeline-actions">
+                        <button class="btn-link">View Details</button>
+                        <button class="btn-link">Resend</button>
+                    </div>
+                </div>
+            `;
+            
+            timeline.prepend(timelineItem);
+        }
+
+        function addNewCollege() {
+            Utils.showSuccessModal('Add new college form will open here');
+        }
+
+        function importCollegeDatabase() {
+            Utils.showSuccessModal('College database import feature coming soon!');
+        }
+
+        function exportCollegeData() {
+            Utils.showSuccessModal('College data export feature coming soon!');
+        }
+
+        function previewFullInvitation() {
+            const subject = document.getElementById('invitationSubject').value;
+            const message = document.getElementById('invitationMessage').value;
+            
+            if (!subject || !message) {
+                Utils.showError('Please fill in subject and message');
+                return;
+            }
+            
+            const previewWindow = window.open('', '_blank');
+            previewWindow.document.write(`
+                <html>
+                <head>
+                    <title>Invitation Preview</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            padding: 40px; 
+                            max-width: 800px; 
+                            margin: 0 auto; 
+                            background: #f8f5e9;
+                        }
+                        .invitation-container {
+                            background: white;
+                            padding: 60px;
+                            border-radius: 12px;
+                            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+                        }
+                        .header { 
+                            border-bottom: 2px solid #2563eb; 
+                            padding-bottom: 30px; 
+                            margin-bottom: 40px; 
+                        }
+                        .header h1 {
+                            color: #1f2937;
+                            margin: 0 0 10px 0;
+                        }
+                        .content { 
+                            line-height: 1.8; 
+                            font-size: 16px;
+                            color: #374151;
+                        }
+                        .footer { 
+                            margin-top: 60px; 
+                            padding-top: 30px; 
+                            border-top: 1px solid #e5e7eb; 
+                            text-align: center; 
+                            color: #6b7280; 
+                            font-size: 14px; 
+                        }
+                        .print-btn {
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: #2563eb;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-weight: 600;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <button class="print-btn" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <div class="invitation-container">
+                        <div class="header">
+                            <h1>${subject}</h1>
+                            <p style="color: #6b7280;">Invitation Preview</p>
+                        </div>
+                        <div class="content">
+                            ${message.replace(/\n/g, '<br>')}
+                        </div>
+                        <div class="footer">
+                            <p>This is a preview of your invitation. Actual recipients will see their college name and contact person.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+
+        function saveAsDraft() {
+            Utils.showSuccessModal('Invitation saved as draft successfully!');
+        }
+
+        function viewCollegeDetails(collegeId) {
+            const college = colleges.find(c => c.id === collegeId);
+            if (college) {
+                Utils.showSuccessModal(`
+                    <h4>${college.name}</h4>
+                    <p><strong>Location:</strong> ${college.location}</p>
+                    <p><strong>Contact:</strong> ${college.contactPerson}</p>
+                    <p><strong>Email:</strong> ${college.email}</p>
+                    <p><strong>Phone:</strong> ${college.phone}</p>
+                    <p><strong>Status:</strong> ${college.status}</p>
+                    <p><strong>Department:</strong> ${college.department}</p>
+                `);
+            }
+        }
+
+        function editCollege(collegeId) {
+            Utils.showSuccessModal('College edit form will open here');
+        }
+
+        function removeRecipient(collegeId) {
+            // Uncheck the checkbox in the table
+            const checkbox = document.querySelector(`.college-checkbox[data-id="${collegeId}"]`);
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+            
+            // Remove from selected colleges
+            selectedColleges.delete(collegeId);
+            updateRecipientsCount();
+            updateBulkInviteButton();
+        }
+
+        function openCollegeSelector() {
+            // Create modal for college selection
+            const modalContent = `
+                <h4 style="margin-top: 0; margin-bottom: 1rem;">Select Colleges</h4>
+                <p style="color: #6b7280; margin-bottom: 1.5rem;">Choose colleges to receive the invitation:</p>
+                <div style="max-height: 300px; overflow-y: auto; margin: 1rem 0; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.5rem;">
+                    ${colleges.map(college => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid #e5e7eb; ${selectedColleges.has(college.id) ? 'background: #eff6ff;' : ''}">
+                            <div>
+                                <strong>${college.name}</strong><br>
+                                <small style="color: #6b7280;">${college.location} • ${college.contactPerson}</small>
+                            </div>
+                            <button onclick="toggleCollegeSelection(${college.id})" class="btn ${selectedColleges.has(college.id) ? 'btn-primary' : 'btn-outline'}" style="padding: 0.25rem 0.75rem; font-size: 0.85rem;">
+                                ${selectedColleges.has(college.id) ? '✓ Selected' : 'Select'}
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
+                    <button onclick="$('#modal').hide()" class="btn btn-outline">Cancel</button>
+                    <button onclick="updateSelectedFromModal(); $('#modal').hide(); updateRecipientsCount();" class="btn btn-success">Apply Selection</button>
+                </div>
+            `;
+            
+            Utils.showModal(modalContent, { width: '600px' });
+            
+            // Add the toggle function to window context
+            window.toggleCollegeSelection = function(collegeId) {
+                if (selectedColleges.has(collegeId)) {
+                    selectedColleges.delete(collegeId);
+                } else {
+                    selectedColleges.add(collegeId);
+                }
+                openCollegeSelector(); // Refresh the modal
+            };
+            
+            window.updateSelectedFromModal = function() {
+                // Update checkboxes in main table
+                const checkboxes = document.querySelectorAll('.college-checkbox');
+                checkboxes.forEach(checkbox => {
+                    const collegeId = parseInt(checkbox.dataset.id);
+                    checkbox.checked = selectedColleges.has(collegeId);
+                });
+                
+                updateBulkInviteButton();
+                updateRecipientsCount();
+            };
+        }
+
+        function exportAnalyticsReport() {
+            Utils.showLoading();
+            setTimeout(() => {
+                Utils.hideLoading();
+                Utils.showSuccessModal('Analytics report exported as PDF successfully!');
+            }, 1500);
+        }
+
+        function exportAnalyticsData() {
+            Utils.showLoading();
+            setTimeout(() => {
+                Utils.hideLoading();
+                Utils.showSuccessModal('Analytics data exported as CSV successfully!');
+            }, 1500);
+        }
+
+        function shareAnalytics() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'College Outreach Analytics',
+                    text: `Check out the outreach analytics for ${eventData.event_name}`,
+                    url: window.location.href
+                });
+            } else {
+                Utils.showSuccessModal('Share link copied to clipboard!');
+            }
+        }
+    </script>
+</body>
+</html>

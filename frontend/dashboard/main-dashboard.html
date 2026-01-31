@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SKASC Event Manager</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .app-container {
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .nav-brand i {
+            color: #2563eb;
+            font-size: 1.5rem;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4b5563;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: #f3f4f6;
+            color: #2563eb;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 3rem;
+        }
+        
+        .welcome-section {
+            background: linear-gradient(135deg, #2563eb, #8b5cf6);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+        
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .welcome-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5rem;
+            color: #2563eb;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .stat-card p {
+            color: #6b7280;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0 1.5rem 0;
+        }
+        
+        .section-title h2 {
+            font-size: 1.8rem;
+            color: #1f2937;
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #8b5cf6);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: none;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+        
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .event-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .event-header {
+            padding: 1.5rem;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .event-icon {
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .event-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: #1f2937;
+            font-size: 1.2rem;
+        }
+        
+        .event-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .event-body {
+            padding: 1.5rem;
+        }
+        
+        .event-description {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
+        .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .event-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .event-actions {
+            display: flex;
+            gap: 0.5rem;
+            border-top: 1px solid #f3f4f6;
+            padding: 1rem 1.5rem;
+            background: #f8fafc;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-state h3 {
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        
+        .status-active {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .status-inactive {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: #2563eb;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-section {
+                padding: 2rem;
+            }
+            
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>SKASC Event Manager</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="/auth/logout.html" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <div class="welcome-section">
+                    <h1>Welcome to Event Manager</h1>
+                    <p>Create, manage, and track all your events in one place</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 id="totalEvents">0</h3>
+                        <p>Total Events</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="activeEvents">0</h3>
+                        <p>Active Events</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalParticipants">0</h3>
+                        <p>Total Participants</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="upcomingEvents">0</h3>
+                        <p>Upcoming Events</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <h2>Your Events</h2>
+                <button onclick="window.location.href='/events/event-selector.html'" class="btn btn-primary">
+                    <i class="fas fa-plus-circle"></i> Create New Event
+                </button>
+            </div>
+
+            <div id="eventsContainer">
+                <div id="loading" style="text-align: center; padding: 3rem;">
+                    <div class="loading"></div>
+                    <p style="color: #6b7280; margin-top: 1rem;">Loading events...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            if (!Utils.isAuthenticated()) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            // Load events
+            loadEvents();
+            loadStats();
+        });
+
+        function loadEvents() {
+            const eventsContainer = document.getElementById('eventsContainer');
+            const loadingIndicator = document.getElementById('loading');
+            
+            try {
+                // Get events using EventManager
+                const events = EventManager.getAllEvents();
+                
+                if (events.length === 0) {
+                    eventsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-plus fa-3x"></i>
+                            <h3>No Events Created Yet</h3>
+                            <p>Create your first event to get started!</p>
+                            <button onclick="window.location.href='/events/event-selector.html'" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Create First Event
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Clear loading
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+                
+                // Clear existing events
+                eventsContainer.innerHTML = '<div class="events-grid" id="eventsGrid"></div>';
+                const eventsGrid = document.getElementById('eventsGrid');
+                
+                // Sort events by creation date (newest first)
+                events.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                
+                // Display events
+                events.forEach(event => {
+                    const eventCard = createEventCard(event);
+                    eventsGrid.appendChild(eventCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading events:', error);
+                eventsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle fa-3x"></i>
+                        <h3>Error Loading Events</h3>
+                        <p>${error.message}</p>
+                        <button onclick="loadEvents()" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function createEventCard(event) {
+            const eventCard = document.createElement('div');
+            eventCard.className = 'event-card';
+            
+            // Get event icon based on type
+            const eventIcon = getEventIcon(event.event_type);
+            
+            // Format date
+            const eventDate = formatDate(event.created_at);
+            
+            // Status badge
+            const statusClass = event.status === 'active' ? 'status-active' : 'status-inactive';
+            
+            eventCard.innerHTML = `
+                <div class="event-header">
+                    <div class="event-icon">${eventIcon}</div>
+                    <div class="event-info">
+                        <h3>${event.event_name || 'Unnamed Event'}</h3>
+                        <p>${event.event_type ? formatEventType(event.event_type) : 'Custom Event'}</p>
+                    </div>
+                </div>
+                <div class="event-body">
+                    <p class="event-description">${event.description || event.theme || 'No description available'}</p>
+                    <div class="event-meta">
+                        <span><i class="fas fa-calendar"></i> ${eventDate}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${event.venue || 'TBD'}</span>
+                        <span><i class="fas fa-circle ${statusClass}"></i> ${event.status || 'active'}</span>
+                    </div>
+                </div>
+                <div class="event-actions">
+                    <button onclick="viewEvent('${event.id}')" class="btn btn-primary" style="flex: 1;">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                    <button onclick="editEvent('${event.id}')" class="btn btn-secondary">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+            `;
+            
+            return eventCard;
+        }
+
+        function getEventIcon(eventType) {
+            const icons = {
+                'hackathon': '💻',
+                'paper-presentation': '📄',
+                'ideathon': '💡',
+                'custom': '✨',
+                'workshop': '🔧',
+                'seminar': '🎤',
+                'conference': '🏛️',
+                'competition': '🏆'
+            };
+            return icons[eventType] || '📅';
+        }
+
+        function formatEventType(eventType) {
+            const formatted = {
+                'hackathon': 'Hackathon',
+                'paper-presentation': 'Paper Presentation',
+                'ideathon': 'Ideathon',
+                'custom': 'Custom Event',
+                'workshop': 'Workshop',
+                'seminar': 'Seminar',
+                'conference': 'Conference',
+                'competition': 'Competition'
+            };
+            return formatted[eventType] || eventType;
+        }
+
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return 'Recently';
+                
+                return date.toLocaleDateString('en-US', { 
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            } catch (e) {
+                return 'Recently';
+            }
+        }
+
+        function viewEvent(eventId) {
+            // Get event
+            const event = EventManager.getEventById(eventId);
+            
+            if (event) {
+                // Save to session storage for event details page
+                sessionStorage.setItem('selectedEvent', JSON.stringify(event));
+                sessionStorage.setItem('selectedEventId', eventId);
+                
+                // Navigate to event details
+                window.location.href = '/dashboard/dashboard.html'; // This is your event-details.html
+            } else {
+                Utils.showError('Event not found');
+            }
+        }
+
+        function editEvent(eventId) {
+            const event = EventManager.getEventById(eventId);
+            
+            if (event) {
+                // Save to session storage for editing
+                sessionStorage.setItem('editingEvent', JSON.stringify(event));
+                sessionStorage.setItem('editingEventId', eventId);
+                sessionStorage.setItem('eventType', event.event_type);
+                
+                // Redirect to appropriate form based on event type
+                const formPages = {
+                    'hackathon': '/events/hackathon-form.html',
+                    'paper-presentation': '/events/paper-presentation-form.html',
+                    'ideathon': '/events/ideathon-form.html',
+                    'custom': '/events/custom-form.html'
+                };
+                
+                window.location.href = formPages[event.event_type] || '/events/hackathon-form.html';
+            } else {
+                Utils.showError('Event not found');
+            }
+        }
+
+        function loadStats() {
+            const events = EventManager.getAllEvents();
+            
+            // Update stats
+            document.getElementById('totalEvents').textContent = events.length;
+            
+            const activeEvents = events.filter(event => event.status === 'active').length;
+            document.getElementById('activeEvents').textContent = activeEvents;
+            
+            // Mock data for other stats (you can update these later)
+            document.getElementById('totalParticipants').textContent = events.length * 42; // Mock data
+            document.getElementById('upcomingEvents').textContent = activeEvents; // Mock data
+        }
+    </script>
+</body>
+</html>

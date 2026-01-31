@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Generator - SKASC Event Manager</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .generator-layout {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1200px) {
+            .generator-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .generator-layout {
+                gap: 1rem;
+            }
+        }
+
+        .designer-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+
+        .certificate-preview-container {
+            flex: 1;
+            overflow: auto;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .certificate-wrapper {
+            transform-origin: top center;
+            transform: scale(0.85);
+            transition: transform 0.3s;
+        }
+
+        .certificate-template {
+            width: 700px;
+            height: 500px;
+            background: #f8f5e9;
+            padding: 25px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+        }
+
+        .certificate-border {
+            border: 3px solid #8b5cf6;
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+            position: relative;
+        }
+
+        .certificate-header {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .header-icon {
+            font-size: 2rem;
+            color: #8b5cf6;
+            margin-bottom: 0.8rem;
+        }
+
+        .certificate-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #1f2937;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .certificate-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 1rem 0;
+        }
+
+        .participant-name {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 1.5rem 0;
+            padding: 0.8rem 2rem;
+            font-family: 'Brush Script MT', 'Segoe Script', cursive;
+            line-height: 1.1;
+            max-width: 90%;
+            word-wrap: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .certificate-body {
+            margin: 1rem 0;
+            padding: 0 1rem;
+            width: 100%;
+        }
+
+        .certificate-body p {
+            margin: 0.5rem 0;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        .certificate-body h3 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin: 1rem 0;
+            line-height: 1.3;
+            max-width: 100%;
+            word-wrap: break-word;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .signatures-section {
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .signature {
+            text-align: center;
+            flex: 1;
+            padding: 0 1rem;
+        }
+
+        .signature-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            min-height: 24px;
+        }
+
+        .signature-line {
+            width: 150px;
+            height: 1px;
+            background: #1f2937;
+            margin: 0.5rem auto;
+        }
+
+        .signature-title {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .certificate-footer {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+            text-align: center;
+            width: 100%;
+        }
+
+        .certificate-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Customization Section */
+        .customization-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+
+        .customization-tabs {
+            display: flex;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            min-width: 80px;
+        }
+
+        .tab.active {
+            border-bottom-color: #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .tab:hover:not(.active) {
+            background: #f9fafb;
+        }
+
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem 0;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #1f2937;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea.form-input {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        .form-hint {
+            display: block;
+            margin-top: 0.25rem;
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+
+        .style-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+        }
+
+        .style-option {
+            text-align: center;
+            cursor: pointer;
+            padding: 0.8rem 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border: 2px solid #e5e7eb;
+        }
+
+        .style-option.active {
+            background: #f3f4f6;
+            border-color: #2563eb;
+        }
+
+        .style-option:hover:not(.active) {
+            border-color: #9ca3af;
+        }
+
+        .style-preview {
+            width: 100%;
+            height: 40px;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .style-preview.elegant {
+            background: linear-gradient(45deg, #f8f5e9, #fffaf0);
+            border: 1px solid #8b5cf6;
+        }
+
+        .style-preview.modern {
+            background: linear-gradient(45deg, #ffffff, #f0f9ff);
+            border: 1px solid #2563eb;
+        }
+
+        .style-preview.classic {
+            background: linear-gradient(45deg, #fef3c7, #fef9c3);
+            border: 1px solid #f59e0b;
+        }
+
+        .style-preview.academic {
+            background: linear-gradient(45deg, #f0fdf4, #dcfce7);
+            border: 1px solid #10b981;
+        }
+
+        .participants-list {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .signature-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .signature-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .signature-input-group label {
+            font-size: 0.85rem;
+            color: #4b5563;
+        }
+
+        /* Gallery Styles */
+        .gallery-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.2rem;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .gallery-preview {
+            height: 120px;
+            overflow: hidden;
+        }
+
+        .gallery-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-info {
+            padding: 0.8rem;
+        }
+
+        .gallery-info h5 {
+            margin: 0 0 0.3rem 0;
+            color: #1f2937;
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .gallery-info p {
+            color: #6b7280;
+            font-size: 0.8rem;
+            margin-bottom: 0.6rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .gallery-tags {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: #f3f4f6;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: #4b5563;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 0.9rem;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            min-width: auto;
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-gray-600 {
+            color: #6b7280;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mt-8 {
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+            color: #1f2937;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            justify-content: center;
+        }
+
+        .zoom-btn {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .zoom-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .zoom-level {
+            font-size: 0.9rem;
+            color: #6b7280;
+            min-width: 60px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Certificate Scale Styles */
+        .certificate-scale-0 {
+            transform: scale(0.6);
+        }
+
+        .certificate-scale-1 {
+            transform: scale(0.7);
+        }
+
+        .certificate-scale-2 {
+            transform: scale(0.85);
+        }
+
+        .certificate-scale-3 {
+            transform: scale(1);
+        }
+
+        .certificate-scale-4 {
+            transform: scale(1.15);
+        }
+
+        /* Form Layout Improvements */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Template Preview */
+        .template-preview {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .template-preview h4 {
+            margin: 0 0 0.5rem 0;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .template-preview-text {
+            font-size: 0.85rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success/Error Messages */
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-certificate"></i>
+                    <span>Certificate Generator</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="/features/features.html" class="nav-link">
+                        <i class="fas fa-arrow-left"></i> Back to Features
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <h1 class="section-title">Certificate Generator</h1>
+            <p class="text-center text-gray-600 mb-8">Create beautiful certificates for your event participants</p>
+
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+
+            <div class="generator-layout">
+                <!-- Certificate Designer -->
+                <div class="designer-section">
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <span class="zoom-level" id="zoomLevel">85%</span>
+                        <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="certificate-preview-container">
+                        <div class="certificate-wrapper" id="certificateWrapper">
+                            <div class="certificate-template">
+                                <div class="certificate-border">
+                                    <div class="certificate-header">
+                                        <div class="header-icon">
+                                            <i class="fas fa-award"></i>
+                                        </div>
+                                        <h2 id="certificateTitle">CERTIFICATE OF PARTICIPATION</h2>
+                                        <p class="subtitle" id="certificateSubtitle">This certifies that</p>
+                                    </div>
+                                    
+                                    <div class="certificate-content">
+                                        <div class="participant-name" id="participantName">
+                                            John Doe
+                                        </div>
+                                        
+                                        <div class="certificate-body">
+                                            <p>has successfully participated in</p>
+                                            <h3 id="eventName">Event Name Here</h3>
+                                            <p>organized by <strong>SKASC Event Manager</strong></p>
+                                            <p>on <span id="eventDate">January 31, 2026</span></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="signatures-section">
+                                        <div class="signatures">
+                                            <div class="signature" id="signature1">
+                                                <div class="signature-name" id="signatory1Name">Event Coordinator</div>
+                                                <div class="signature-line"></div>
+                                                <p class="signature-title" id="signatory1Title">Signature</p>
+                                            </div>
+                                            <div class="signature" id="signature2">
+                                                <div class="signature-name" id="signatory2Name">Head of Department</div>
+                                                <div class="signature-line"></div>
+                                                <p class="signature-title" id="signatory2Title">Signature</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="certificate-footer">
+                                            <p>Certificate ID: <span id="certificateId">SKASC-2026-001</span></p>
+                                            <p>This certificate is digitally verified</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="certificate-actions">
+                        <button onclick="generateCertificate()" class="btn btn-success">
+                            <i class="fas fa-download"></i> Download Certificate
+                        </button>
+                        <button onclick="generateBulkCertificates()" class="btn btn-primary">
+                            <i class="fas fa-users"></i> Bulk Generate
+                        </button>
+                        <button onclick="previewCertificate()" class="btn btn-secondary">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Certificate Customization -->
+                <div class="customization-section">
+                    <div class="customization-tabs">
+                        <div class="tab active" onclick="showTab('participants')">
+                            <i class="fas fa-users"></i> Participants
+                        </div>
+                        <div class="tab" onclick="showTab('design')">
+                            <i class="fas fa-palette"></i> Design
+                        </div>
+                        <div class="tab" onclick="showTab('template')">
+                            <i class="fas fa-layer-group"></i> Template
+                        </div>
+                        <div class="tab" onclick="showTab('signatures')">
+                            <i class="fas fa-pen-fancy"></i> Signatures
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content">
+                        <!-- Participants Tab -->
+                        <div id="participantsTab" class="tab-pane active">
+                            <h4 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: #1f2937;">Participant Details</h4>
+                            <div class="form-group">
+                                <label class="form-label">Participant Name</label>
+                                <input type="text" id="nameInput" class="form-input" 
+                                       placeholder="Enter participant name" 
+                                       oninput="updateParticipantName()">
+                                <small class="form-hint">This will appear as the main name on the certificate</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Achievement Type</label>
+                                <select id="achievementType" class="form-input" onchange="updateAchievementType()">
+                                    <option value="participation">Participation</option>
+                                    <option value="winner">Winner (1st Place)</option>
+                                    <option value="runner">Runner Up (2nd Place)</option>
+                                    <option value="merit">Merit</option>
+                                    <option value="excellence">Excellence</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Upload Participants (CSV)</label>
+                                <input type="file" id="csvUpload" class="form-input" accept=".csv" onchange="handleCSVUpload(event)">
+                                <small class="form-hint">Upload CSV with columns: Name, Email, Achievement</small>
+                            </div>
+                            
+                            <div class="participants-list" id="participantsList">
+                                <div style="text-align: center; color: #9ca3af; padding: 1rem;">
+                                    <i class="fas fa-users fa-lg"></i>
+                                    <p style="margin: 0.5rem 0 0 0;">No participants added yet</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Design Tab -->
+                        <div id="designTab" class="tab-pane">
+                            <h4 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: #1f2937;">Certificate Design</h4>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Certificate Style</label>
+                                <div class="style-options">
+                                    <div class="style-option active" data-style="elegant" onclick="selectStyle('elegant')">
+                                        <div class="style-preview elegant"></div>
+                                        <span>Elegant</span>
+                                    </div>
+                                    <div class="style-option" data-style="modern" onclick="selectStyle('modern')">
+                                        <div class="style-preview modern"></div>
+                                        <span>Modern</span>
+                                    </div>
+                                    <div class="style-option" data-style="classic" onclick="selectStyle('classic')">
+                                        <div class="style-preview classic"></div>
+                                        <span>Classic</span>
+                                    </div>
+                                    <div class="style-option" data-style="academic" onclick="selectStyle('academic')">
+                                        <div class="style-preview academic"></div>
+                                        <span>Academic</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Background Color</label>
+                                    <input type="color" id="bgColor" class="form-input" value="#f8f5e9" 
+                                           style="padding: 0.2rem; height: 45px;" oninput="updateCertificateStyle()">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Text Color</label>
+                                    <input type="color" id="textColor" class="form-input" value="#1f2937" 
+                                           style="padding: 0.2rem; height: 45px;" oninput="updateCertificateStyle()">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Border Style</label>
+                                <select id="borderStyle" class="form-input" onchange="updateCertificateStyle()">
+                                    <option value="solid">Solid Border</option>
+                                    <option value="dashed">Dashed Border</option>
+                                    <option value="ornate">Ornate Border</option>
+                                    <option value="none">No Border</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Font Family</label>
+                                <select id="fontFamily" class="form-input" onchange="updateCertificateFont()">
+                                    <option value="Georgia, serif">Georgia (Classic)</option>
+                                    <option value="'Times New Roman', serif">Times New Roman</option>
+                                    <option value="'Palatino Linotype', serif">Palatino</option>
+                                    <option value="Arial, sans-serif">Arial (Modern)</option>
+                                    <option value="'Brush Script MT', cursive">Brush Script</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Template Tab -->
+                        <div id="templateTab" class="tab-pane">
+                            <h4 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: #1f2937;">Certificate Template</h4>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Certificate Title</label>
+                                <input type="text" id="certTitle" class="form-input" 
+                                       value="CERTIFICATE OF PARTICIPATION"
+                                       oninput="updateCertificateTemplate()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Subtitle Text</label>
+                                <input type="text" id="certSubtitle" class="form-input" 
+                                       value="This certifies that"
+                                       oninput="updateCertificateTemplate()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Certificate Text Template</label>
+                                <textarea id="certText" class="form-input" rows="4" oninput="updateCertificateTemplate()">
+has successfully participated in [Event Name] organized by SKASC Event Manager. This certificate is awarded in recognition of their active participation and contribution to the success of the event.
+                                </textarea>
+                                <small class="form-hint">Use [Event Name] as a placeholder for the actual event name</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Organization Name</label>
+                                <input type="text" id="orgName" class="form-input" 
+                                       value="SKASC Event Manager"
+                                       oninput="updateCertificateTemplate()">
+                            </div>
+                            
+                            <div class="template-preview">
+                                <h4>Preview:</h4>
+                                <p class="template-preview-text" id="textPreview"></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Signatures Tab -->
+                        <div id="signaturesTab" class="tab-pane">
+                            <h4 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: #1f2937;">Signature Details</h4>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Signature 1</label>
+                                <div class="signature-input-group">
+                                    <input type="text" id="signatory1NameInput" class="form-input" 
+                                           placeholder="Name" value="Event Coordinator"
+                                           oninput="updateSignatory(1)">
+                                    <input type="text" id="signatory1TitleInput" class="form-input" 
+                                           placeholder="Title" value="Signature"
+                                           oninput="updateSignatory(1)">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Signature 2</label>
+                                <div class="signature-input-group">
+                                    <input type="text" id="signatory2NameInput" class="form-input" 
+                                           placeholder="Name" value="Head of Department"
+                                           oninput="updateSignatory(2)">
+                                    <input type="text" id="signatory2TitleInput" class="form-input" 
+                                           placeholder="Title" value="Signature"
+                                           oninput="updateSignatory(2)">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Add Custom Signatures</label>
+                                <input type="file" id="signatureUpload1" class="form-input" accept="image/*" style="margin-bottom: 0.5rem;">
+                                <input type="file" id="signatureUpload2" class="form-input" accept="image/*">
+                                <small class="form-hint">Upload signature images (PNG with transparent background recommended)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Certificates Gallery -->
+            <div class="gallery-section">
+                <h3 class="section-title">Generated Certificates</h3>
+                <div class="certificates-grid" id="certificatesGrid">
+                    <!-- Certificates will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Generating certificate...</p>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!Utils.isAuthenticated()) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            loadEventData();
+            setupCertificateListeners();
+            updateCertificateTemplate(); // Initialize template preview
+        });
+
+        let eventData = {};
+        let participants = [];
+        let currentStyle = 'elegant';
+        let currentZoom = 2;
+        let signatureImages = {};
+
+        function loadEventData() {
+            const data = JSON.parse(sessionStorage.getItem('createdEvent'));
+            if (!data) {
+                window.location.href = '/features/features.html';
+                return;
+            }
+            eventData = data;
+            
+            // Update certificate with event data
+            document.getElementById('eventName').textContent = data.event_name;
+            document.getElementById('eventDate').textContent = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Generate certificate ID
+            const certId = `SKASC-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+            document.getElementById('certificateId').textContent = certId;
+            
+            // Update organization name input with event data if available
+            const orgNameInput = document.getElementById('orgName');
+            if (data.organization) {
+                orgNameInput.value = data.organization;
+            }
+            
+            // Update placeholder with event name
+            const nameInput = document.getElementById('nameInput');
+            nameInput.placeholder = `Enter participant name for ${data.event_name}`;
+        }
+
+        function setupCertificateListeners() {
+            // Style options are now handled by selectStyle function
+            
+            // Set initial style
+            selectStyle('elegant');
+            
+            // Set initial signature values
+            updateSignatory(1);
+            updateSignatory(2);
+            
+            // Set initial zoom
+            updateZoom();
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-pane').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all tab headers
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Find and activate the clicked tab header
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                if (tab.textContent.toLowerCase().includes(tabName.toLowerCase()) || 
+                    tab.textContent.includes(tabName)) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        function selectStyle(style) {
+            currentStyle = style;
+            
+            // Update style options UI
+            document.querySelectorAll('.style-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.style === style) {
+                    option.classList.add('active');
+                }
+            });
+            
+            updateCertificateStyle();
+        }
+
+        function updateParticipantName() {
+            const name = document.getElementById('nameInput').value.trim() || 'Participant Name';
+            const nameElement = document.getElementById('participantName');
+            
+            // Handle long names
+            if (name.length > 25) {
+                // For very long names, use smaller font size
+                nameElement.style.fontSize = '2.2rem';
+                nameElement.textContent = name;
+                nameElement.title = name;
+            } else {
+                nameElement.style.fontSize = '2.8rem';
+                nameElement.textContent = name;
+                nameElement.title = '';
+            }
+        }
+
+        function updateAchievementType() {
+            const type = document.getElementById('achievementType').value;
+            const titleElement = document.getElementById('certificateTitle');
+            const subtitleElement = document.getElementById('certificateSubtitle');
+            
+            let title = 'CERTIFICATE OF PARTICIPATION';
+            let subtitle = 'This certifies that';
+            
+            switch(type) {
+                case 'winner':
+                    title = 'CERTIFICATE OF ACHIEVEMENT';
+                    subtitle = 'Awarded to';
+                    break;
+                case 'runner':
+                    title = 'CERTIFICATE OF ACHIEVEMENT';
+                    subtitle = 'Runner Up Award';
+                    break;
+                case 'merit':
+                    title = 'CERTIFICATE OF MERIT';
+                    subtitle = 'Awarded for outstanding performance in';
+                    break;
+                case 'excellence':
+                    title = 'CERTIFICATE OF EXCELLENCE';
+                    subtitle = 'Presented in recognition of excellence in';
+                    break;
+            }
+            
+            // Update UI
+            titleElement.textContent = title;
+            subtitleElement.textContent = subtitle;
+            
+            // Also update the template input
+            document.getElementById('certTitle').value = title;
+            document.getElementById('certSubtitle').value = subtitle;
+        }
+
+        function updateCertificateStyle() {
+            const certTemplate = document.querySelector('.certificate-template');
+            const bgColor = document.getElementById('bgColor').value;
+            const textColor = document.getElementById('textColor').value;
+            const borderStyle = document.getElementById('borderStyle').value;
+            
+            // Apply background color
+            certTemplate.style.backgroundColor = bgColor;
+            
+            // Apply text color to all text elements
+            const textElements = certTemplate.querySelectorAll('h2, h3, p, .subtitle, .signature-name, .signature-title, .certificate-footer');
+            textElements.forEach(el => {
+                el.style.color = textColor;
+            });
+            
+            // Apply border style
+            const border = document.querySelector('.certificate-border');
+            switch(borderStyle) {
+                case 'solid':
+                    border.style.border = '3px solid #8b5cf6';
+                    border.style.backgroundImage = 'none';
+                    break;
+                case 'dashed':
+                    border.style.border = '3px dashed #8b5cf6';
+                    border.style.backgroundImage = 'none';
+                    break;
+                case 'ornate':
+                    border.style.border = 'none';
+                    border.style.backgroundImage = 'linear-gradient(45deg, #8b5cf6 25%, transparent 25%), linear-gradient(-45deg, #8b5cf6 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #8b5cf6 75%), linear-gradient(-45deg, transparent 75%, #8b5cf6 75%)';
+                    border.style.backgroundSize = '20px 20px';
+                    border.style.backgroundPosition = '0 0, 0 10px, 10px -10px, -10px 0px';
+                    break;
+                case 'none':
+                    border.style.border = 'none';
+                    border.style.backgroundImage = 'none';
+                    break;
+            }
+            
+            // Apply style theme
+            certTemplate.className = 'certificate-template ' + currentStyle;
+            
+            // Update specific elements based on style
+            const headerIcon = document.querySelector('.header-icon');
+            const participantName = document.getElementById('participantName');
+            const eventName = document.getElementById('eventName');
+            
+            switch(currentStyle) {
+                case 'elegant':
+                    headerIcon.style.color = '#8b5cf6';
+                    participantName.style.color = '#2563eb';
+                    eventName.style.color = '#1f2937';
+                    break;
+                case 'modern':
+                    headerIcon.style.color = '#2563eb';
+                    participantName.style.color = '#1d4ed8';
+                    eventName.style.color = '#1e40af';
+                    break;
+                case 'classic':
+                    headerIcon.style.color = '#f59e0b';
+                    participantName.style.color = '#d97706';
+                    eventName.style.color = '#92400e';
+                    break;
+                case 'academic':
+                    headerIcon.style.color = '#10b981';
+                    participantName.style.color = '#059669';
+                    eventName.style.color = '#065f46';
+                    break;
+            }
+        }
+
+        function updateCertificateFont() {
+            const fontFamily = document.getElementById('fontFamily').value;
+            const certTemplate = document.querySelector('.certificate-template');
+            
+            certTemplate.style.fontFamily = fontFamily;
+            
+            // Special handling for Brush Script font
+            if (fontFamily.includes('Brush Script')) {
+                document.getElementById('participantName').style.fontFamily = "'Brush Script MT', cursive";
+            } else {
+                document.getElementById('participantName').style.fontFamily = fontFamily;
+            }
+        }
+
+        function updateCertificateTemplate() {
+            const title = document.getElementById('certTitle').value;
+            const subtitle = document.getElementById('certSubtitle').value;
+            const text = document.getElementById('certText').value;
+            const orgName = document.getElementById('orgName').value;
+            
+            // Update certificate elements
+            document.getElementById('certificateTitle').textContent = title;
+            document.getElementById('certificateSubtitle').textContent = subtitle;
+            
+            // Update organization name in certificate
+            const orgElement = document.querySelector('.certificate-body strong');
+            if (orgElement) {
+                orgElement.textContent = orgName;
+            }
+            
+            // Update text preview
+            const previewText = text.replace('[Event Name]', eventData.event_name || 'Event Name');
+            document.getElementById('textPreview').textContent = previewText;
+        }
+
+        function updateSignatory(signatoryNumber) {
+            const nameInput = document.getElementById(`signatory${signatoryNumber}NameInput`);
+            const titleInput = document.getElementById(`signatory${signatoryNumber}TitleInput`);
+            const nameElement = document.getElementById(`signatory${signatoryNumber}Name`);
+            const titleElement = document.getElementById(`signatory${signatoryNumber}Title`);
+            
+            if (nameInput && nameElement) {
+                nameElement.textContent = nameInput.value || 'Name';
+            }
+            
+            if (titleInput && titleElement) {
+                titleElement.textContent = titleInput.value || 'Signature';
+            }
+        }
+
+        function zoomIn() {
+            if (currentZoom < 4) {
+                currentZoom++;
+                updateZoom();
+            }
+        }
+
+        function zoomOut() {
+            if (currentZoom > 0) {
+                currentZoom--;
+                updateZoom();
+            }
+        }
+
+        function updateZoom() {
+            const wrapper = document.getElementById('certificateWrapper');
+            const zoomLevel = document.getElementById('zoomLevel');
+            
+            // Remove all scale classes
+            wrapper.className = 'certificate-wrapper';
+            
+            // Add current scale class
+            wrapper.classList.add('certificate-scale-' + currentZoom);
+            
+            // Update zoom level text
+            const percentages = ['60%', '70%', '85%', '100%', '115%'];
+            zoomLevel.textContent = percentages[currentZoom];
+        }
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.style.display='none'" 
+                            style="background: none; border: none; color: inherit; cursor: pointer; font-size: 1.2rem;">
+                        &times;
+                    </button>
+                </div>
+            `;
+            alertContainer.appendChild(alertDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        if (alertDiv.parentNode) {
+                            alertDiv.parentNode.removeChild(alertDiv);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+
+        async function generateCertificate() {
+            const participantName = document.getElementById('nameInput').value.trim();
+            if (!participantName || participantName === '') {
+                showAlert('Please enter a participant name first', 'error');
+                return;
+            }
+
+            showLoading();
+            
+            try {
+                // Temporarily set to full size for capture
+                const wrapper = document.getElementById('certificateWrapper');
+                const originalClass = wrapper.className;
+                wrapper.className = 'certificate-wrapper certificate-scale-3'; // 100% scale
+                
+                // Use html2canvas to capture certificate
+                const certificate = document.querySelector('.certificate-template');
+                
+                html2canvas(certificate, {
+                    scale: 2,
+                    backgroundColor: null,
+                    useCORS: true,
+                    logging: false,
+                    allowTaint: true
+                }).then(canvas => {
+                    // Restore original zoom
+                    wrapper.className = originalClass;
+                    
+                    // Convert to image
+                    const imgData = canvas.toDataURL('image/png');
+                    
+                    // Create download link
+                    const link = document.createElement('a');
+                    const fileName = `Certificate_${participantName.replace(/\s+/g, '_')}_${eventData.event_name.replace(/\s+/g, '_')}.png`;
+                    link.download = fileName;
+                    link.href = imgData;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    hideLoading();
+                    showAlert('Certificate downloaded successfully!');
+                    
+                    // Add to gallery
+                    addToGallery(imgData, participantName);
+                }).catch(error => {
+                    console.error('html2canvas error:', error);
+                    hideLoading();
+                    showAlert('Failed to generate certificate. Please try again.', 'error');
+                });
+                
+            } catch (error) {
+                hideLoading();
+                showAlert('Failed to generate certificate: ' + error.message, 'error');
+            }
+        }
+
+        function generateBulkCertificates() {
+            showAlert('Bulk certificate generation feature coming soon!<br><br>You will be able to generate certificates for multiple participants at once.');
+        }
+
+        function previewCertificate() {
+            // Show certificate in full screen preview
+            const certHTML = document.querySelector('.certificate-template').outerHTML;
+            const participantName = document.getElementById('nameInput').value.trim() || 'Participant Name';
+            const previewWindow = window.open('', '_blank');
+            previewWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Certificate Preview - ${participantName}</title>
+                    <style>
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                        }
+                        body { 
+                            margin: 0; 
+                            padding: 40px; 
+                            display: flex; 
+                            justify-content: center; 
+                            align-items: center; 
+                            min-height: 100vh; 
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            font-family: Arial, sans-serif;
+                        }
+                        .preview-container {
+                            max-width: 1000px;
+                            width: 100%;
+                            margin: 0 auto;
+                        }
+                        .preview-header {
+                            text-align: center;
+                            margin-bottom: 30px;
+                            color: white;
+                            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        }
+                        .preview-header h2 {
+                            margin: 0 0 10px 0;
+                            font-size: 2rem;
+                        }
+                        .preview-header p {
+                            margin: 5px 0;
+                            opacity: 0.9;
+                        }
+                        .certificate-wrapper {
+                            transform: scale(0.9);
+                            transform-origin: top center;
+                            margin: 0 auto;
+                        }
+                        .preview-actions {
+                            text-align: center;
+                            margin-top: 30px;
+                        }
+                        .preview-btn {
+                            background: white;
+                            color: #667eea;
+                            border: none;
+                            padding: 12px 24px;
+                            border-radius: 8px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                        }
+                        .preview-btn:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="preview-container">
+                        <div class="preview-header">
+                            <h2>Certificate Preview</h2>
+                            <p>For: ${eventData.event_name}</p>
+                            <p>Participant: ${participantName}</p>
+                        </div>
+                        <div class="certificate-wrapper">
+                            ${certHTML}
+                        </div>
+                        <div class="preview-actions">
+                            <button class="preview-btn" onclick="window.print()">
+                                <i class="fas fa-print"></i> Print Certificate
+                            </button>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const lines = content.split('\n');
+                const participantsList = document.getElementById('participantsList');
+                
+                participantsList.innerHTML = '';
+                
+                lines.forEach((line, index) => {
+                    if (index === 0 || line.trim() === '') return; // Skip header and empty lines
+                    
+                    const [name, email, achievement] = line.split(',');
+                    if (name && name.trim()) {
+                        const div = document.createElement('div');
+                        div.className = 'participant-item';
+                        div.style.cssText = 'padding: 0.5rem; border-bottom: 1px solid #e5e7eb; cursor: pointer;';
+                        div.innerHTML = `
+                            <strong>${name.trim()}</strong>
+                            <br>
+                            <small style="color: #6b7280;">${email ? email.trim() : 'No email'}</small>
+                        `;
+                        div.onclick = () => {
+                            document.getElementById('nameInput').value = name.trim();
+                            updateParticipantName();
+                            if (achievement && achievement.trim()) {
+                                const achievementSelect = document.getElementById('achievementType');
+                                const achievementValue = achievement.trim().toLowerCase();
+                                if (['winner', 'runner', 'merit', 'excellence'].includes(achievementValue)) {
+                                    achievementSelect.value = achievementValue;
+                                    updateAchievementType();
+                                }
+                            }
+                        };
+                        participantsList.appendChild(div);
+                    }
+                });
+                
+                if (participantsList.children.length === 0) {
+                    participantsList.innerHTML = `
+                        <div style="text-align: center; color: #9ca3af; padding: 1rem;">
+                            <i class="fas fa-users fa-lg"></i>
+                            <p style="margin: 0.5rem 0 0 0;">No valid participants found in CSV</p>
+                        </div>
+                    `;
+                } else {
+                    showAlert(`Loaded ${participantsList.children.length} participants from CSV`);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function addToGallery(imageData, participantName) {
+            const gallery = document.getElementById('certificatesGrid');
+            
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            galleryItem.innerHTML = `
+                <div class="gallery-preview">
+                    <img src="${imageData}" alt="${participantName} Certificate" 
+                         style="cursor: pointer;" onclick="viewCertificate('${imageData}', '${participantName}')">
+                </div>
+                <div class="gallery-info">
+                    <h5 title="${participantName}">${participantName.length > 15 ? participantName.substring(0, 12) + '...' : participantName}</h5>
+                    <p title="${eventData.event_name}">${eventData.event_name.length > 20 ? eventData.event_name.substring(0, 17) + '...' : eventData.event_name}</p>
+                    <div class="gallery-tags">
+                        <span class="tag">Certificate</span>
+                        <span class="tag">${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Add to beginning of gallery
+            if (gallery.children.length > 0) {
+                gallery.insertBefore(galleryItem, gallery.firstChild);
+            } else {
+                gallery.appendChild(galleryItem);
+            }
+        }
+
+        function viewCertificate(imageData, participantName) {
+            const viewWindow = window.open('', '_blank');
+            viewWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${participantName} - Certificate</title>
+                    <style>
+                        body { 
+                            margin: 0; 
+                            padding: 20px; 
+                            display: flex; 
+                            flex-direction: column;
+                            justify-content: center; 
+                            align-items: center; 
+                            min-height: 100vh; 
+                            background: #f3f4f6;
+                        }
+                        img { 
+                            max-width: 90vw; 
+                            max-height: 80vh; 
+                            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+                            border-radius: 8px;
+                            margin-bottom: 20px;
+                        }
+                        .actions {
+                            display: flex;
+                            gap: 10px;
+                            margin-top: 20px;
+                        }
+                        button {
+                            padding: 10px 20px;
+                            border: none;
+                            border-radius: 6px;
+                            background: #2563eb;
+                            color: white;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: background 0.3s;
+                        }
+                        button:hover {
+                            background: #1d4ed8;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <img src="${imageData}" alt="${participantName} Certificate">
+                    <div class="actions">
+                        <button onclick="window.print()">Print</button>
+                        <button onclick="window.close()">Close</button>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+    </script>
+</body>
+</html>
